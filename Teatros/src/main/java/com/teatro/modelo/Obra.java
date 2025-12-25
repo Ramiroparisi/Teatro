@@ -1,6 +1,7 @@
 package com.teatro.modelo;
 
 import java.io.Serializable;
+import java.io.InputStream;
 
 public class Obra implements Serializable {
 	
@@ -8,6 +9,7 @@ public class Obra implements Serializable {
 	
 	private int id;
 	private String nombre;
+	private InputStream foto;
 	private String descripcion;
 	private int duracion;
 	private int empleadoID;
@@ -17,6 +19,7 @@ public class Obra implements Serializable {
 
     public Obra(String nombre, String descripcion, int duracion, int empleadoID) {
         this.nombre = nombre;
+        this.foto = foto;
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.empleadoID = empleadoID;
@@ -25,6 +28,7 @@ public class Obra implements Serializable {
     public Obra(int id, String nombre, String descripcion, int duracion, int empleadoID) {
         this.id = id;
         this.nombre = nombre;
+        this.foto = foto;
         this.descripcion = descripcion;
         this.duracion = duracion;
         this.empleadoID = empleadoID;
@@ -69,4 +73,12 @@ public class Obra implements Serializable {
     public void setEmpleadoID(int empleadoID) {
         this.empleadoID = empleadoID;
     }
+
+	public InputStream getFoto() {
+		return foto;
+	}
+
+	public void setFoto(InputStream foto) {
+		this.foto = foto;
+	}
 }

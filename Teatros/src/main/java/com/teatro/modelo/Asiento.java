@@ -7,6 +7,7 @@ public class Asiento implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int id;
+	private String fila;
 	private int numero;
 	private int salaID;
 	
@@ -30,6 +31,14 @@ public class Asiento implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public String getFila() {
+        return fila;
+    }
+
+    public void setFila(String fila) {
+        this.fila = fila;
     }
 
     public int getNumero() {
