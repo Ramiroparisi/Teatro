@@ -17,7 +17,7 @@ public class Obra implements Serializable {
 	public Obra() {
     }
 
-    public Obra(String nombre, String descripcion, int duracion, int empleadoID) {
+    public Obra(String nombre, String descripcion, int duracion, int empleadoID, InputStream foto) {
         this.nombre = nombre;
         this.foto = foto;
         this.descripcion = descripcion;
@@ -25,7 +25,7 @@ public class Obra implements Serializable {
         this.empleadoID = empleadoID;
     }
 
-    public Obra(int id, String nombre, String descripcion, int duracion, int empleadoID) {
+    public Obra(int id, String nombre, String descripcion, int duracion, int empleadoID, InputStream foto) {
         this.id = id;
         this.nombre = nombre;
         this.foto = foto;

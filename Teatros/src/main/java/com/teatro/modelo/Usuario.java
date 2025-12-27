@@ -8,7 +8,10 @@ public class Usuario implements Serializable {
 	
 	
 	private int id;
-	private String nomYApe;
+	private String nombre;
+	private String apellido;
+	private String tipoDoc;
+	private String documento;
 	private String telefono;
 	private String mail;
 	private String usuario;
@@ -19,9 +22,12 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(int id, String nomYApe, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
+    public Usuario(int id, String nombre, String apellido, String tipoDoc, String documento, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
         this.id = id;
-        this.nomYApe = nomYApe;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.tipoDoc = tipoDoc;
+        this.documento = documento;
         this.telefono = telefono;
         this.mail = mail;
         this.usuario = usuario;
@@ -31,9 +37,12 @@ public class Usuario implements Serializable {
     }
 
 
-    public Usuario(String nomYApe, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
-        this.nomYApe = nomYApe;
+    public Usuario(String nombre,String apellido, String tipoDoc, String documento, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
+        this.nombre = nombre;
+        this.apellido = apellido;
         this.telefono = telefono;
+        this.tipoDoc = tipoDoc;
+        this.documento = documento;
         this.mail = mail;
         this.usuario = usuario;
         this.contraseña = contrasena;
@@ -49,14 +58,38 @@ public class Usuario implements Serializable {
         this.id = id;
     }
 
-    public String getNomYApe() {
-        return nomYApe;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setNomYApe(String nomYApe) {
-        this.nomYApe = nomYApe;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+    
+    public String getTipoDoc() {
+        return tipoDoc;
+    }
+
+    public void setTipoDoc(String tipoDoc) {
+        this.tipoDoc = tipoDoc;
+    }
+    
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento= documento;
+    }  
+    
     public String getTelefono() {
         return telefono;
     }
