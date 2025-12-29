@@ -81,11 +81,11 @@ public class Pedido implements Serializable {
         this.mercadoPagoId = mercadoPagoId;
     }
 
-    public int getUsuarioId() {
+    public int getUsuarioID() {
         return usuarioId;
     }
 
-    public void setUsuarioId(int usuarioId) {
+    public void setUsuarioID(int usuarioId) {
         this.usuarioId = usuarioId;
     }
 

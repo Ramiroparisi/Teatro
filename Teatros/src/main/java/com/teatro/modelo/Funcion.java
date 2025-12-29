@@ -1,6 +1,7 @@
 package com.teatro.modelo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 
@@ -11,6 +12,7 @@ public class Funcion implements Serializable {
 	private int id;
 	private Date fecha; 
     private Time hora;
+    private BigDecimal precio;
     private Integer obraID;
     private Integer salaID;
     
@@ -56,6 +58,14 @@ public class Funcion implements Serializable {
         this.hora = hora;
     }
 
+    
+    public BigDecimal getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
+    }
     public Integer getObraID() {
         return obraID;
     }

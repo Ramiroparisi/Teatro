@@ -8,57 +8,60 @@ import java.util.List;
 
 public class UsuarioDAO {
 
-	public void add(Usuario u) throws SQLException {
-    Connection cn = null;
-    try {
-
-        if (getByMail(u.getMail()) != null) {
-            throw new SQLException("Ya existe una persona con el email: " + u.getMail());
-        }
-
-        if (getByDocumento(u.getDocumento()) != null) {
-            throw new SQLException("Ya existe una persona con el número de documento: " + u.getDocumento());
-        }
-
-        String sql = "INSERT INTO Usuario (Nombre, Apellido, TipoDoc, Documento, Telefono, Mail, Usuario, Contrasena, Rol, TeatroID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        cn = DbConnector.getInstancia().getConn();
-        
-        try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, u.getNombre());
-            ps.setString(2, u.getApellido());
-            ps.setString(3, u.getTipoDoc());
-            ps.setString(4, u.getDocumento());
-            ps.setString(5, u.getTelefono());
-            ps.setString(6, u.getMail());
-            ps.setString(7, u.getUsuario());
-            ps.setString(8, u.getContrasena());
-            ps.setString(9, u.getRol().toString());
-            
-            if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); 
-            else ps.setNull(10, Types.INTEGER);
-            
-            ps.executeUpdate();
-            
-            ResultSet rsID = ps.getGeneratedKeys();
-            if (rsID.next()) {
-                u.setId(rsID.getInt(1));
+    public void add(Usuario u) throws SQLException {
+        Connection cn = null;
+        try {
+            if (getByMail(u.getMail()) != null) {
+                throw new SQLException("Ya existe una persona con el email: " + u.getMail());
             }
+
+            if (getByDocumento(u.getDocumento()) != null) {
+                throw new SQLException("Ya existe una persona con el número de documento: " + u.getDocumento());
+            }
+
+            String sql = "INSERT INTO Usuario (Nombre, Apellido, TipoDoc, Documento, Telefono, Mail, Usuario, Contrasena, Rol, TeatroID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            cn = DbConnector.getInstancia().getConn();
+            
+            try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, u.getNombre());
+                ps.setString(2, u.getApellido());
+                ps.setString(3, u.getTipoDoc());
+                ps.setString(4, u.getDocumento());
+                ps.setString(5, u.getTelefono());
+                ps.setString(6, u.getMail());
+                ps.setString(7, u.getUsuario());
+                ps.setString(8, u.getContrasena());
+                ps.setString(9, u.getRol().toString());
+                
+                if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); 
+                else ps.setNull(10, Types.INTEGER);
+                
+                ps.executeUpdate();
+                
+                ResultSet rsID = ps.getGeneratedKeys();
+                if (rsID.next()) {
+                    u.setId(rsID.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al intentar registrar usuario: " + e.getMessage());
+            throw e; 
+        } finally {
+            DbConnector.getInstancia().releaseConn();
         }
-    } finally {
-        DbConnector.getInstancia().releaseConn();
     }
-}
 
     public List<Usuario> getAll() {
         List<Usuario> lista = new ArrayList<>();
         String sql = "SELECT * FROM Usuario";
         Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = cn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapearUsuario(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al listar todos los usuarios: " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -94,12 +97,15 @@ public class UsuarioDAO {
             ps.setString(7, u.getUsuario());
             ps.setString(8, u.getContrasena());
             ps.setString(9, u.getRol().toString());
-            if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); else ps.setNull(10, Types.INTEGER);
+            
+            if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); 
+            else ps.setNull(10, Types.INTEGER);
+            
             ps.setInt(11, u.getId());
             
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al actualizar usuario ID " + u.getId() + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -112,7 +118,7 @@ public class UsuarioDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al eliminar usuario ID " + id + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -128,7 +134,7 @@ public class UsuarioDAO {
                 if (rs.next()) u = mapearUsuario(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al buscar usuario por " + columna + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -137,21 +143,33 @@ public class UsuarioDAO {
 
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
-        u.setId(rs.getInt("ID"));
-        u.setNombre(rs.getString("Nombre"));
-        u.setApellido(rs.getString("Apellido"));
-        u.setTipoDoc(rs.getString("TipoDoc"));
-        u.setDocumento(rs.getString("Documento"));
-        u.setTelefono(rs.getString("Telefono"));
-        u.setMail(rs.getString("Mail"));
-        u.setUsuario(rs.getString("Usuario"));
-        u.setContrasena(rs.getString("Contrasena"));
-        // Asumiendo que RolUsuario tiene un método valueOf para convertir String a Enum
-        u.setRol(RolUsuario.valueOf(rs.getString("Rol")));
-        
-        int teatroId = rs.getInt("TeatroID");
-        u.setTeatroID(rs.wasNull() ? null : teatroId);
-        
+        try {
+            u.setId(rs.getInt("ID"));
+            u.setNombre(rs.getString("Nombre"));
+            u.setApellido(rs.getString("Apellido"));
+            u.setTipoDoc(rs.getString("TipoDoc"));
+            u.setDocumento(rs.getString("Documento"));
+            u.setTelefono(rs.getString("Telefono"));
+            u.setMail(rs.getString("Mail"));
+            u.setUsuario(rs.getString("Usuario"));
+            u.setContrasena(rs.getString("Contrasena"));
+
+            String rolDB = rs.getString("Rol");
+            if (rolDB != null) {
+                try {
+                    u.setRol(RolUsuario.valueOf(rolDB));
+                } catch (IllegalArgumentException ex) {
+                    System.err.println("Advertencia: El rol '" + rolDB + "' no coincide con el Enum RolUsuario.");
+                }
+            }
+            
+            int teatroId = rs.getInt("TeatroID");
+            u.setTeatroID(rs.wasNull() ? null : teatroId);
+            
+        } catch (SQLException e) {
+            System.err.println("Error en mapeo de Usuario: " + e.getMessage());
+            throw e;
+        }
         return u;
     }
 }

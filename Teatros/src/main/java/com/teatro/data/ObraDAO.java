@@ -8,9 +8,8 @@ import java.util.List;
 public class ObraDAO {
 
     public void add(Obra o) throws SQLException {
-        Connection cn = null;
         String sql = "INSERT INTO Obra (Nombre, Descripcion, Duracion, Foto, EmpleadoID) VALUES (?, ?, ?, ?, ?)";
-        cn = DbConnector.getInstancia().getConn();
+        Connection cn = DbConnector.getInstancia().getConn();
         
         try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, o.getNombre());
@@ -30,6 +29,9 @@ public class ObraDAO {
             if (rsID.next()) {
                 o.setId(rsID.getInt(1));
             }
+        } catch (SQLException e) {
+            System.err.println("Error al insertar obra '" + o.getNombre() + "': " + e.getMessage());
+            throw e; // Lanzo otra ves la excepción para que el Servlet pueda manejarla
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -54,40 +56,23 @@ public class ObraDAO {
             
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al actualizar obra ID " + o.getId() + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
-    }
-
-    private Obra mapearObra(ResultSet rs) throws SQLException {
-        Obra o = new Obra();
-        o.setId(rs.getInt("ID"));
-        o.setNombre(rs.getString("Nombre"));
-        o.setDescripcion(rs.getString("Descripcion"));
-        o.setDuracion(rs.getInt("Duracion"));
-        o.setFoto(rs.getBinaryStream("Foto"));
-        
-        int idEmp = rs.getInt("EmpleadoID");
-        if (rs.wasNull()) {
-            o.setEmpleadoID(null);
-        } else {
-            o.setEmpleadoID(idEmp);
-        }
-        
-        return o;
     }
 
     public List<Obra> getAll() {
         List<Obra> lista = new ArrayList<>();
         String sql = "SELECT * FROM Obra";
         Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = cn.prepareStatement(sql); 
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(mapearObra(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al obtener todas las obras: " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -98,8 +83,8 @@ public class ObraDAO {
         return findByColumn("ID", id);
     }
 
-    public Obra getByNombre(String user) {
-        return findByColumn("Nombre", user);
+    public Obra getByNombre(String nombre) {
+        return findByColumn("Nombre", nombre);
     }
 
     public List<Obra> getByTeatro(int idTeatro) {
@@ -114,12 +99,11 @@ public class ObraDAO {
             
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    // Reutilizamos tu mapeo para llenar la lista
                     lista.add(mapearObra(rs));
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al buscar obras del teatro ID " + idTeatro + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -133,7 +117,7 @@ public class ObraDAO {
             ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al eliminar obra ID " + id + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
@@ -149,9 +133,28 @@ public class ObraDAO {
                 if (rs.next()) o = mapearObra(rs);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al buscar obra por " + columna + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
+        }
+        return o;
+    }
+
+    private Obra mapearObra(ResultSet rs) throws SQLException {
+        Obra o = new Obra();
+        try {
+            o.setId(rs.getInt("ID"));
+            o.setNombre(rs.getString("Nombre"));
+            o.setDescripcion(rs.getString("Descripcion"));
+            o.setDuracion(rs.getInt("Duracion"));
+            o.setFoto(rs.getBinaryStream("Foto"));
+            
+            int idEmp = rs.getInt("EmpleadoID");
+            o.setEmpleadoID(rs.wasNull() ? null : idEmp);
+            
+        } catch (SQLException e) {
+            System.err.println("Error en mapeo de Obra: " + e.getMessage());
+            throw e;
         }
         return o;
     }

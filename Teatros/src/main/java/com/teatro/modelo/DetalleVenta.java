@@ -7,15 +7,15 @@ public class DetalleVenta implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private int id;
-    private int pedidoId;
-    private int entradaId;
+    private int pedidoID;
+    private int entradaID;
     private BigDecimal precioUnitario;
 
     public DetalleVenta() {
     }
 
     public DetalleVenta(int entradaId, BigDecimal precioUnitario) {
-        this.entradaId = entradaId;
+        this.entradaID = entradaId;
         this.precioUnitario = precioUnitario;
     }
 
@@ -27,20 +27,20 @@ public class DetalleVenta implements Serializable {
         this.id = id;
     }
 
-    public int getPedidoId() {
-        return pedidoId;
+    public int getPedidoID() {
+        return pedidoID;
     }
 
-    public void setPedidoId(int pedidoId) {
-        this.pedidoId = pedidoId;
+    public void setPedidoID(int pedidoId) {
+        this.pedidoID = pedidoId;
     }
 
-    public int getEntradaId() {
-        return entradaId;
+    public int getEntradaID() {
+        return entradaID;
     }
 
-    public void setEntradaId(int entradaId) {
-        this.entradaId = entradaId;
+    public void setEntradaID(int entradaId) {
+        this.entradaID = entradaId;
     }
 
     public BigDecimal getPrecioUnitario() {

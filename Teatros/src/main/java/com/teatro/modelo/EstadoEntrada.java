@@ -1,10 +1,10 @@
 package com.teatro.modelo;
 
 public enum EstadoEntrada {
-	RESERVADA,
-	PAGADA,
-    CANCELADA,
-    USADA;
+	Reservada,
+	Pagada,
+    Cancelada,
+    Usada;
     
     public String toDbString() {
         return this.name();
