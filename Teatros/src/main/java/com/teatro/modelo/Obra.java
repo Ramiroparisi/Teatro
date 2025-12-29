@@ -12,7 +12,7 @@ public class Obra implements Serializable {
 	private InputStream foto;
 	private String descripcion;
 	private int duracion;
-	private int empleadoID;
+	private Integer empleadoID;
 	
 	public Obra() {
     }
@@ -66,11 +66,11 @@ public class Obra implements Serializable {
         this.duracion = duracion;
     }
 
-    public int getEmpleadoID() {
+    public Integer getEmpleadoID() {
         return empleadoID;
     }
 
-    public void setEmpleadoID(int empleadoID) {
+    public void setEmpleadoID(Integer empleadoID) {
         this.empleadoID = empleadoID;
     }
 

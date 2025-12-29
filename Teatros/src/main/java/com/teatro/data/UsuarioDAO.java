@@ -2,7 +2,6 @@ package com.teatro.data;
 
 import com.teatro.modelo.Usuario;
 import com.teatro.modelo.RolUsuario;
-import com.teatro.data.DbConnector;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
