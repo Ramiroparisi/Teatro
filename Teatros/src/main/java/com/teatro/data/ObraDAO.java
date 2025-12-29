@@ -36,7 +36,6 @@ public class ObraDAO {
     }
 
     public void put(Obra o) {
-        // Corregido: Nombre de columna y cantidad de parámetros
         String sql = "UPDATE Obra SET Nombre=?, Descripcion=?, Duracion=?, Foto=?, EmpleadoID=? WHERE ID=?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
@@ -45,14 +44,13 @@ public class ObraDAO {
             ps.setInt(3, o.getDuracion());
             ps.setBinaryStream(4, o.getFoto());
             
-            // Manejo de NULL en el UPDATE
             if (o.getEmpleadoID() != null) {
                 ps.setInt(5, o.getEmpleadoID());
             } else {
                 ps.setNull(5, Types.INTEGER);
             }
             
-            ps.setInt(6, o.getId()); // El ID es el sexto parámetro (?)
+            ps.setInt(6, o.getId());
             
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -104,6 +102,30 @@ public class ObraDAO {
         return findByColumn("Nombre", user);
     }
 
+    public List<Obra> getByTeatro(int idTeatro) {
+        List<Obra> lista = new ArrayList<>();
+        String sql = "SELECT o.* FROM Obra o " +
+                     "INNER JOIN Usuario u ON o.EmpleadoID = u.ID " +
+                     "WHERE u.TeatroID = ?";
+        
+        Connection cn = DbConnector.getInstancia().getConn();
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, idTeatro);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Reutilizamos tu mapeo para llenar la lista
+                    lista.add(mapearObra(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return lista;
+    }
+    
     public void delete(int id) {
         String sql = "DELETE FROM Obra WHERE ID = ?";
         Connection cn = DbConnector.getInstancia().getConn();

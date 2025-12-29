@@ -11,8 +11,8 @@ public class Funcion implements Serializable {
 	private int id;
 	private Date fecha; 
     private Time hora;
-    private int obraID;
-    private int salaID;
+    private Integer obraID;
+    private Integer salaID;
     
     public Funcion() {
     }
@@ -56,19 +56,19 @@ public class Funcion implements Serializable {
         this.hora = hora;
     }
 
-    public int getObraID() {
+    public Integer getObraID() {
         return obraID;
     }
 
-    public void setObraID(int obraID) {
+    public void setObraID(Integer obraID) {
         this.obraID = obraID;
     }
 
-    public int getSalaID() {
+    public Integer getSalaID() {
         return salaID;
     }
 
-    public void setSalaID(int salaID) {
+    public void setSalaID(Integer salaID) {
         this.salaID = salaID;
     }
 }
