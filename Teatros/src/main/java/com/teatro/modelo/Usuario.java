@@ -14,15 +14,14 @@ public class Usuario implements Serializable {
 	private String documento;
 	private String telefono;
 	private String mail;
-	private String usuario;
-	private String contraseña;
+	private String contrasena;
 	private RolUsuario rol;
     private Integer teatroID;
     
     public Usuario() {
     }
 
-    public Usuario(int id, String nombre, String apellido, String tipoDoc, String documento, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
+    public Usuario(int id, String nombre, String apellido, String tipoDoc, String documento, String telefono, String mail, String contrasena, RolUsuario rol, Integer teatroID) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -30,22 +29,20 @@ public class Usuario implements Serializable {
         this.documento = documento;
         this.telefono = telefono;
         this.mail = mail;
-        this.usuario = usuario;
-        this.contraseña = contrasena;
+        this.contrasena = contrasena;
         this.rol = rol;
         this.teatroID = teatroID;
     }
 
 
-    public Usuario(String nombre,String apellido, String tipoDoc, String documento, String telefono, String mail, String usuario, String contrasena, RolUsuario rol, Integer teatroID) {
+    public Usuario(String nombre,String apellido, String tipoDoc, String documento, String telefono, String mail, String contrasena, RolUsuario rol, Integer teatroID) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.tipoDoc = tipoDoc;
         this.documento = documento;
         this.mail = mail;
-        this.usuario = usuario;
-        this.contraseña = contrasena;
+        this.contrasena = contrasena;
         this.rol = rol;
         this.teatroID = teatroID;
     }
@@ -106,20 +103,12 @@ public class Usuario implements Serializable {
         this.mail = mail;
     }
 
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
     public String getContrasena() {
-        return contraseña;
+        return contrasena;
     }
 
     public void setContrasena(String contrasena) {
-        this.contraseña = contrasena;
+        this.contrasena = contrasena;
     }
 
     public RolUsuario getRol() {

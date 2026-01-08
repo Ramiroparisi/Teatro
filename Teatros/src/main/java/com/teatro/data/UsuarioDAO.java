@@ -19,7 +19,7 @@ public class UsuarioDAO {
                 throw new SQLException("Ya existe una persona con el número de documento: " + u.getDocumento());
             }
 
-            String sql = "INSERT INTO Usuario (Nombre, Apellido, TipoDoc, Documento, Telefono, Mail, Usuario, Contrasena, Rol, TeatroID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Usuario (Nombre, Apellido, TipoDoc, Documento, Telefono, Mail, Contrasena, Rol, TeatroID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             cn = DbConnector.getInstancia().getConn();
             
             try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -29,12 +29,11 @@ public class UsuarioDAO {
                 ps.setString(4, u.getDocumento());
                 ps.setString(5, u.getTelefono());
                 ps.setString(6, u.getMail());
-                ps.setString(7, u.getUsuario());
-                ps.setString(8, u.getContrasena());
-                ps.setString(9, u.getRol().toString());
+                ps.setString(7, u.getContrasena());
+                ps.setString(8, u.getRol().toString());
                 
-                if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); 
-                else ps.setNull(10, Types.INTEGER);
+                if (u.getTeatroID() != null) ps.setInt(9, u.getTeatroID()); 
+                else ps.setNull(9, Types.INTEGER);
                 
                 ps.executeUpdate();
                 
@@ -49,6 +48,35 @@ public class UsuarioDAO {
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
+    }
+    
+    public Usuario login(String identificador, String pass) {
+        Usuario u = null;
+        Connection cn = DbConnector.getInstancia().getConn();
+        
+        if (cn == null) {
+            System.err.println("ERROR: No se pudo obtener la conexión a la base de datos.");
+            return null;
+        }
+
+        String sql = "SELECT * FROM usuario WHERE (Mail = ? OR Documento = ?) AND Contrasena = ?";
+        
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, identificador);
+            ps.setString(2, identificador);
+            ps.setString(3, pass);
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    u = mapearUsuario(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return u;
     }
 
     public List<Usuario> getAll() {
@@ -72,10 +100,6 @@ public class UsuarioDAO {
         return findByColumn("ID", id);
     }
 
-    public Usuario getByUsuario(String user) {
-        return findByColumn("Usuario", user);
-    }
-
     public Usuario getByMail(String mail) {
         return findByColumn("Mail", mail);
     }
@@ -85,7 +109,7 @@ public class UsuarioDAO {
     }
 
     public void put(Usuario u) {
-        String sql = "UPDATE Usuario SET Nombre=?, Apellido=?, TipoDoc=?, Documento=?, Telefono=?, Mail=?, Usuario=?, Contrasena=?, Rol=?, TeatroID=? WHERE ID=?";
+        String sql = "UPDATE Usuario SET Nombre=?, Apellido=?, TipoDoc=?, Documento=?, Telefono=?, Mail=?, Contrasena=?, Rol=?, TeatroID=? WHERE ID=?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, u.getNombre());
@@ -94,14 +118,13 @@ public class UsuarioDAO {
             ps.setString(4, u.getDocumento());
             ps.setString(5, u.getTelefono());
             ps.setString(6, u.getMail());
-            ps.setString(7, u.getUsuario());
-            ps.setString(8, u.getContrasena());
-            ps.setString(9, u.getRol().toString());
+            ps.setString(7, u.getContrasena());
+            ps.setString(8, u.getRol().toString());
             
-            if (u.getTeatroID() != null) ps.setInt(10, u.getTeatroID()); 
-            else ps.setNull(10, Types.INTEGER);
+            if (u.getTeatroID() != null) ps.setInt(9, u.getTeatroID()); 
+            else ps.setNull(9, Types.INTEGER);
             
-            ps.setInt(11, u.getId());
+            ps.setInt(10, u.getId());
             
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -151,15 +174,14 @@ public class UsuarioDAO {
             u.setDocumento(rs.getString("Documento"));
             u.setTelefono(rs.getString("Telefono"));
             u.setMail(rs.getString("Mail"));
-            u.setUsuario(rs.getString("Usuario"));
             u.setContrasena(rs.getString("Contrasena"));
 
             String rolDB = rs.getString("Rol");
             if (rolDB != null) {
                 try {
-                    u.setRol(RolUsuario.valueOf(rolDB));
+                    u.setRol(RolUsuario.valueOf(rolDB.toUpperCase())); 
                 } catch (IllegalArgumentException ex) {
-                    System.err.println("Advertencia: El rol '" + rolDB + "' no coincide con el Enum RolUsuario.");
+                    System.err.println("Error: El rol '" + rolDB + "' no existe en RolUsuario.");
                 }
             }
             
