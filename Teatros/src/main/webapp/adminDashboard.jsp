@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.teatro.modelo.Usuario" %>
 <%
-    // 1. Protección de Seguridad: Solo ADMINS
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
     if (user == null || !user.getRol().toString().equalsIgnoreCase("admin")) {
         response.sendRedirect("login.jsp");
@@ -14,6 +13,7 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard - Teatro Central</title>
     <link href="css/index-styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="images/icons8-teatro-48.png" />
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
     <style>
         .sidebar { height: 100vh; background: #2c3e50; color: white; padding-top: 20px; }
@@ -33,8 +33,8 @@
                 </div>
                 <hr>
                 <a href="adminDashboard.jsp"><i class="fas fa-home me-2"></i> Inicio</a>
-                <a href="gestionarObras"><i class="fas fa-theater-masks me-2"></i> Obras</a>
-                <a href="gestionarUsuarios"><i class="fas fa-users me-2"></i> Usuarios</a>
+                <a href="listaObras"><i class="fas fa-theater-masks me-2"></i> Obras</a>
+                <a href="listaUsuarios"><i class="fas fa-users me-2"></i> Usuarios</a>
                 <a href="reporteVentas"><i class="fas fa-chart-line me-2"></i> Ventas</a>
                 <a href="index.jsp"><i class="fas fa-eye me-2"></i> Ver Sitio Público</a>
                 <hr>

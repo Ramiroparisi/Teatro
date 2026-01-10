@@ -1,9 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.teatro.modelo.Usuario" %>
 <%
-    // Intentamos recuperar al usuario de la sesión
+
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
-    // Si 'user' es null, el visitante es un invitado; de lo contrario, está logueado
+
+    if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) {
+        response.sendRedirect("adminDashboard.jsp");
+        return; 
+    }
+    
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,7 +16,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Teatro - Inicio</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+	<link rel="icon" type="image/png" href="images/icons8-teatro-48.png" />
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
     <link href="css/index-styles.css" rel="stylesheet" />
@@ -19,7 +24,7 @@
 <body id="page-top">
     <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand" href="index.jsp">Teatro Central</a>
+            <a class="navbar-brand" href="index.jsp">Rosario en cartel</a>
             <button class="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
                 Menú <i class="fas fa-bars"></i>
             </button>
@@ -31,7 +36,7 @@
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="mis-entradas">Mis Compras</a></li>
                         <li class="nav-item mx-0 mx-lg-1">
                             <a class="nav-link py-3 px-0 px-lg-3 rounded" href="logout" style="color: #ffc107;">
-                                Salir (<%= user.getNombre() %>)
+                                Salir
                             </a>
                         </li>
                     <% } else { %>

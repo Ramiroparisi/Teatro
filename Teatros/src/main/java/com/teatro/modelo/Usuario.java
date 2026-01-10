@@ -17,6 +17,7 @@ public class Usuario implements Serializable {
 	private String contrasena;
 	private RolUsuario rol;
     private Integer teatroID;
+    private String nombreTeatro;
     
     public Usuario() {
     }
@@ -125,5 +126,12 @@ public class Usuario implements Serializable {
 
     public void setTeatroID(Integer teatroID) {
         this.teatroID = teatroID;
+    }
+    
+    public String getNombreTeatro() { 
+    	return nombreTeatro; 
+    }
+    public void setNombreTeatro(String nombreTeatro) { 
+    	this.nombreTeatro = nombreTeatro;
     }
 }
