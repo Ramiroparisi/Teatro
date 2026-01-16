@@ -8,24 +8,25 @@ import java.util.List;
 public class FuncionDAO {
 
 	public void add(Funcion f) throws SQLException {
-        String sql = "INSERT INTO funcion (Fecha, Hora, Precio, ObraID) VALUES (?, ?, ?, ?)";
-        Connection cn = DbConnector.getInstancia().getConn();
-        
-        try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setDate(1, f.getFecha());
-            ps.setTime(2, f.getHora());
-            ps.setBigDecimal(3, f.getPrecio());
-            ps.setInt(4, f.getObraID());
-            
-            ps.executeUpdate();
-            
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) f.setId(rs.getInt(1));
-            }
-        } finally {
-            DbConnector.getInstancia().releaseConn();
-        }
-    }
+	    String sql = "INSERT INTO funcion (Fecha, Hora, Precio, ObraID, TeatroID) VALUES (?, ?, ?, ?, ?)";
+	    Connection cn = DbConnector.getInstancia().getConn();
+	    
+	    try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+	        ps.setDate(1, f.getFecha());
+	        ps.setTime(2, f.getHora());
+	        ps.setBigDecimal(3, f.getPrecio());
+	        ps.setInt(4, f.getObraID());
+	        ps.setInt(5, f.getTeatroID());
+	        
+	        ps.executeUpdate();
+	        
+	        try (ResultSet rs = ps.getGeneratedKeys()) {
+	            if (rs.next()) f.setId(rs.getInt(1));
+	        }
+	    } finally {
+	        DbConnector.getInstancia().releaseConn();
+	    }
+	}
     
     public void put(Funcion f) {
         String sql = "UPDATE Funcion SET Fecha=?, Hora=?, Precio=?, ObraID=? WHERE ID=?";
@@ -108,6 +109,11 @@ public class FuncionDAO {
               
             int idObra = rs.getInt("ObraID");
             f.setObraID(rs.wasNull() ? null : idObra);
+
+            // AÑADIR ESTO:
+            int idTeatro = rs.getInt("TeatroID");
+            f.setTeatroID(rs.wasNull() ? null : idTeatro);
+
         } catch (SQLException e) {
             System.err.println("Error en el mapeo de Funcion: " + e.getMessage());
             throw e;

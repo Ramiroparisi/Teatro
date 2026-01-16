@@ -14,6 +14,7 @@ public class Funcion implements Serializable {
     private Time hora;
     private BigDecimal precio;
     private Integer obraID;
+    private Integer teatroID;
     
     public Funcion() {
     }
@@ -70,4 +71,12 @@ public class Funcion implements Serializable {
     public void setObraID(Integer obraID) {
         this.obraID = obraID;
     }
+    
+	public Integer getTeatroID() {
+	    return teatroID;
+	}
+
+	public void setTeatroID(Integer teatroID) {
+	    this.teatroID = teatroID;
+	}
 }

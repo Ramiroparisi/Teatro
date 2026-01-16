@@ -37,7 +37,11 @@ public class NuevaFuncionServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         try {
             Funcion f = new Funcion();
+            
+            // 1. CAPTURAR LOS IDS DEL FORMULARIO
             f.setObraID(Integer.parseInt(request.getParameter("idObra")));
+            f.setTeatroID(Integer.parseInt(request.getParameter("idTeatro"))); // ESTA LÍNEA FALTA EN TU CÓDIGO
+            
             f.setPrecio(new BigDecimal(request.getParameter("precio")));
 
             String fechaHoraRaw = request.getParameter("fechaHora");

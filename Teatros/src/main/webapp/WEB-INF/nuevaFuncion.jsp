@@ -1,82 +1,119 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.teatro.modelo.Obra" %>
-<%@ page import="com.teatro.modelo.Teatro" %>
-<%@ page import="java.util.List" %>
+<%@ page import="java.util.List, com.teatro.modelo.Obra, com.teatro.modelo.Teatro, com.teatro.modelo.Usuario" %>
 <%
-    List<Obra> obras = (List<Obra>) request.getAttribute("listaObras");
-    List<Teatro> teatros = (List<Teatro>) request.getAttribute("listaTeatros");
-    String error = (String) request.getAttribute("error");
+    Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
+    if (user == null || !user.getRol().toString().equalsIgnoreCase("admin")) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        return;
+    }
 %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nueva Función - Panel de Administración</title>
+    <title>Programar Nueva Función</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; padding: 40px; }
-        .form-card { background: white; padding: 30px; border-radius: 12px; max-width: 550px; margin: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        h2 { color: #1a73e8; margin-top: 0; border-bottom: 2px solid #e8f0fe; padding-bottom: 10px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        select:focus, input:focus { border-color: #1a73e8; outline: none; box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
-        .btn-submit { background-color: #1a73e8; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
-        .btn-submit:hover { background-color: #1557b0; }
-        .error-banner { background-color: #fce8e6; color: #d93025; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; border: 1px solid #fad2cf; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #5f6368; text-decoration: none; font-size: 14px; }
-        .back-link:hover { text-decoration: underline; }
+        body { background-color: #f4f7f6; }
+        .card-custom { border: none; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .header-gradient { 
+            background: linear-gradient(45deg, #2c3e50, #4ca1af); 
+            color: white; border-radius: 15px 15px 0 0; padding: 25px; 
+        }
+        .form-label { font-weight: 600; color: #2c3e50; }
+        .btn-primary-custom { background-color: #3498db; border: none; padding: 12px; font-weight: bold; }
+        .btn-primary-custom:hover { background-color: #2980b9; }
     </style>
 </head>
 <body>
 
-<div class="form-card">
-    <h2>📅 Programar Función</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            
+            <% if (request.getAttribute("error") != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i> <%= request.getAttribute("error") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
 
-    <% if (error != null) { %>
-        <div class="error-banner">
-            <strong>Error:</strong> <%= error %>
+            <div class="card card-custom">
+                <div class="header-gradient text-center">
+                    <h2 class="mb-0"><i class="far fa-calendar-plus me-2"></i>Programar Función</h2>
+                    <small>Asigne obra, sede y horario</small>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form action="nuevaFuncion" method="POST">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar Obra</label>
+                            <select name="idObra" class="form-select form-select-lg" required>
+                                <option value="" disabled selected>Escoja una obra...</option>
+                                <% 
+                                    List<Obra> obras = (List<Obra>) request.getAttribute("listaObras");
+                                    if(obras != null) {
+                                        for(Obra o : obras) { %>
+                                            <option value="<%= o.getId() %>"><%= o.getNombre() %></option>
+                                <%      } 
+                                    } %>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Teatro / Sede</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-landmark"></i></span>
+                                <select name="idTeatro" class="form-select" required>
+                                    <option value="" disabled selected>¿En qué teatro será?</option>
+                                    <% 
+                                        List<Teatro> teatros = (List<Teatro>) request.getAttribute("listaTeatros");
+                                        if(teatros != null) {
+                                            for(Teatro t : teatros) { %>
+                                                <option value="<%= t.getId() %>"><%= t.getNombre() %> (Cap: <%= t.getCapacidad() %>)</option>
+                                    <%      } 
+                                        } %>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label">Precio de Entrada</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" name="precio" step="0.01" class="form-control" placeholder="0.00" required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label">Fecha y Hora</label>
+                                <input type="datetime-local" name="fechaHora" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary-custom text-white shadow-sm">
+                                <i class="fas fa-save me-2"></i>Confirmar Programación
+                            </button>
+                            <a href="listaObras" class="btn btn-light">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <p class="text-center mt-4 text-muted small">
+                <i class="fas fa-info-circle me-1"></i> 
+                Recuerde que no puede haber dos funciones en el mismo teatro a la misma hora.
+            </p>
         </div>
-    <% } %>
-
-    <form action="nuevaFuncion" method="POST">
-        
-        <div class="form-group">
-            <label for="idObra">Obra Teatral</label>
-            <select name="idObra" id="idObra" required>
-                <option value="">-- Seleccione una obra --</option>
-                <% if (obras != null) { 
-                    for (Obra o : obras) { %>
-                        <option value="<%= o.getId() %>"><%= o.getNombre() %> (ID: <%= o.getId() %>)</option>
-                <% } } %>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="idTeatro">Teatro / Sede</label>
-            <select name="idTeatro" id="idTeatro" required>
-                <option value="">-- Seleccione un teatro --</option>
-                <% if (teatros != null) { 
-                    for (Teatro t : teatros) { %>
-                        <option value="<%= t.getId() %>"><%= t.getNombre() %> (ID: <%= t.getId() %>)</option>
-                <% } } %>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="fechaHora">Fecha y Hora de inicio</label>
-            <input type="datetime-local" name="fechaHora" id="fechaHora" required>
-        </div>
-
-        <div class="form-group">
-            <label for="precio">Precio de la Entrada ($)</label>
-            <input type="number" name="precio" id="precio" step="0.01" min="0" placeholder="Ej: 1500.50" required>
-        </div>
-
-        <button type="submit" class="btn-submit">Crear Función</button>
-        
-        <a href="listaObras" class="back-link">← Volver a la lista de obras</a>
-    </form>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

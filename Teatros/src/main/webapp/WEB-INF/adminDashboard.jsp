@@ -41,6 +41,7 @@
                 <a href="listaObras"><i class="fas fa-theater-masks me-2"></i> Obras</a>
                 <a href="listaUsuarios"><i class="fas fa-users me-2"></i> Usuarios</a>
                 <a href="reporteVentas"><i class="fas fa-chart-line me-2"></i> Ventas</a>
+				<a href="listaTeatros"><i class="fas fa-landmark me-2"></i> Teatros</a>
                 
                 <hr class="bg-light">
                 <a href="inicio"><i class="fas fa-eye me-2"></i> Ver Sitio Público</a>

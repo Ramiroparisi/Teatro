@@ -4,8 +4,8 @@
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
 
     if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) {
-        response.sendRedirect("adminDashboard.jsp");
-        return; 
+       response.sendRedirect("adminDashboard"); 
+       return;
     }
     List<Obra> obras = (List<Obra>) request.getAttribute("obrasCartelera");
     
@@ -58,7 +58,7 @@
         <div class="container d-flex align-items-center flex-column">
             <img class="masthead-avatar mb-5" src="assets/img/avataaars.svg" alt="..." style="width: 180px;" />
             <h1 class="masthead-heading text-uppercase mb-0">
-                <%= (user != null) ? "Bienvenido, " + user.getNombre() : "Bienvenido al Teatro" %>
+                <%= (user != null) ? "Bienvenido, " + user.getNombre() : "Bienvenido a Rosario en cartel" %>
             </h1>
             <div class="divider-custom divider-light">
                 <div class="divider-custom-line"></div>
@@ -72,6 +72,7 @@
     <section class="page-section" id="obras">
         <div class="container">
             <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Cartelera Actual</h2>
+            <p class="text-center text-uppercase"> Para añadir entradas al carrito, presiona sobre la función que deseas comprar </p>
             <div class="divider-custom">
                 <div class="divider-custom-line"></div>
                 <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
