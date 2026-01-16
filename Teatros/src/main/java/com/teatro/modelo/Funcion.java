@@ -14,24 +14,21 @@ public class Funcion implements Serializable {
     private Time hora;
     private BigDecimal precio;
     private Integer obraID;
-    private Integer salaID;
     
     public Funcion() {
     }
 
-    public Funcion(Date fecha, Time hora, int obraID, int salaID) {
+    public Funcion(Date fecha, Time hora, int obraID) {
         this.fecha = fecha;
         this.hora = hora;
         this.obraID = obraID;
-        this.salaID = salaID;
     }
 
-    public Funcion(int id, Date fecha, Time hora, int obraID, int salaID) {
+    public Funcion(int id, Date fecha, Time hora, int obraID) {
         this.id = id;
         this.fecha = fecha;
         this.hora = hora;
         this.obraID = obraID;
-        this.salaID = salaID;
     }
 
     public int getId() {
@@ -72,13 +69,5 @@ public class Funcion implements Serializable {
 
     public void setObraID(Integer obraID) {
         this.obraID = obraID;
-    }
-
-    public Integer getSalaID() {
-        return salaID;
-    }
-
-    public void setSalaID(Integer salaID) {
-        this.salaID = salaID;
     }
 }

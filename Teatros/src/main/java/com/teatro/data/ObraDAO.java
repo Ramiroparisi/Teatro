@@ -1,161 +1,142 @@
 package com.teatro.data;
 
+import com.teatro.modelo.Funcion;
 import com.teatro.modelo.Obra;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObraDAO {
-
     public void add(Obra o) throws SQLException {
-        String sql = "INSERT INTO Obra (Nombre, Descripcion, Duracion, Foto, EmpleadoID) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Obra (Nombre, Descripcion, Duracion, Foto, EmpleadoID, TeatroID) VALUES (?, ?, ?, ?, ?, ?)";
         Connection cn = DbConnector.getInstancia().getConn();
         
         try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, o.getNombre());
             ps.setString(2, o.getDescripcion());
             ps.setInt(3, o.getDuracion());
-            ps.setBinaryStream(4, o.getFoto()); 
             
-            if (o.getEmpleadoID() != null) {
-                ps.setInt(5, o.getEmpleadoID());
+            if (o.getFoto() != null) {
+                ps.setBinaryStream(4, o.getFoto());
             } else {
-                ps.setNull(5, Types.INTEGER);
+                ps.setNull(4, java.sql.Types.BLOB);
             }
+            
+            ps.setObject(5, o.getEmpleadoID(), java.sql.Types.INTEGER);
+            ps.setObject(6, o.getTeatroID(), java.sql.Types.INTEGER);
             
             ps.executeUpdate();
             
-            ResultSet rsID = ps.getGeneratedKeys();
-            if (rsID.next()) {
-                o.setId(rsID.getInt(1));
+            try (ResultSet rsID = ps.getGeneratedKeys()) {
+                if (rsID.next()) o.setId(rsID.getInt(1));
             }
-        } catch (SQLException e) {
-            System.err.println("Error al insertar obra '" + o.getNombre() + "': " + e.getMessage());
-            throw e; // Lanzo otra ves la excepción para que el Servlet pueda manejarla
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
     }
 
-    public void put(Obra o) {
-        String sql = "UPDATE Obra SET Nombre=?, Descripcion=?, Duracion=?, Foto=?, EmpleadoID=? WHERE ID=?";
+    public void put(Obra o) throws SQLException {
+        String sql = "UPDATE Obra SET Nombre=?, Descripcion=?, Duracion=?, Foto=?, EmpleadoID=?, TeatroID=? WHERE ID=?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setString(1, o.getNombre());
             ps.setString(2, o.getDescripcion());
             ps.setInt(3, o.getDuracion());
             ps.setBinaryStream(4, o.getFoto());
-            
-            if (o.getEmpleadoID() != null) {
-                ps.setInt(5, o.getEmpleadoID());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
-            
-            ps.setInt(6, o.getId());
+            ps.setObject(5, o.getEmpleadoID(), java.sql.Types.INTEGER);
+            ps.setObject(6, o.getTeatroID(), java.sql.Types.INTEGER);
+            ps.setInt(7, o.getId());
             
             ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error al actualizar obra ID " + o.getId() + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
     }
 
-    public List<Obra> getAll() {
-        List<Obra> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Obra";
-        Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql); 
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(mapearObra(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al obtener todas las obras: " + e.getMessage());
-        } finally {
-            DbConnector.getInstancia().releaseConn();
-        }
-        return lista;
-    }
-
-    public Obra getByID(int id) {
-        return findByColumn("ID", id);
-    }
-
-    public Obra getByNombre(String nombre) {
-        return findByColumn("Nombre", nombre);
-    }
-
-    public List<Obra> getByTeatro(int idTeatro) {
-        List<Obra> lista = new ArrayList<>();
-        String sql = "SELECT o.* FROM Obra o " +
-                     "INNER JOIN Usuario u ON o.EmpleadoID = u.ID " +
-                     "WHERE u.TeatroID = ?";
-        
-        Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, idTeatro);
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapearObra(rs));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al buscar obras del teatro ID " + idTeatro + ": " + e.getMessage());
-        } finally {
-            DbConnector.getInstancia().releaseConn();
-        }
-        return lista;
-    }
-    
-    public void delete(int id) {
+    public void delete(int id) throws SQLException {
         String sql = "DELETE FROM Obra WHERE ID = ?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar obra ID " + id + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
     }
 
-    private Obra findByColumn(String columna, Object valor) {
+
+    public List<Obra> getAllWithFunciones() throws SQLException {
+        List<Obra> lista = new ArrayList<>();
+        String sqlObras = "SELECT o.*, t.Nombre as nombreTeatro FROM obra o " +
+                          "INNER JOIN teatro t ON o.TeatroID = t.ID";
+        
+        Connection cn = DbConnector.getInstancia().getConn();
+        try (PreparedStatement psObra = cn.prepareStatement(sqlObras);
+             ResultSet rsObra = psObra.executeQuery()) {
+            
+            while (rsObra.next()) {
+                Obra o = mapearObra(rsObra);
+                o.setNombreTeatro(rsObra.getString("nombreTeatro"));
+                o.setFunciones(getFuncionesPorObra(cn, o.getId()));
+                
+                lista.add(o);
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return lista;
+    }
+
+
+    private List<Funcion> getFuncionesPorObra(Connection cn, int obraID) throws SQLException {
+        List<Funcion> funciones = new ArrayList<>();
+        String sqlFunc = "SELECT * FROM funcion WHERE ObraID = ? ORDER BY Fecha, Hora";
+        try (PreparedStatement psFunc = cn.prepareStatement(sqlFunc)) {
+            psFunc.setInt(1, obraID);
+            try (ResultSet rsFunc = psFunc.executeQuery()) {
+                while (rsFunc.next()) {
+                    Funcion f = new Funcion();
+                    f.setId(rsFunc.getInt("ID"));
+                    f.setFecha(rsFunc.getDate("Fecha"));
+                    f.setHora(rsFunc.getTime("Hora"));
+                    f.setPrecio(rsFunc.getBigDecimal("Precio"));
+                    funciones.add(f);
+                }
+            }
+        }
+        return funciones;
+    }
+
+    public Obra getByID(int id) throws SQLException {
         Obra o = null;
-        String sql = "SELECT * FROM Obra WHERE " + columna + " = ?";
+        String sql = "SELECT o.*, t.Nombre as nombreTeatro FROM Obra o " +
+                     "LEFT JOIN teatro t ON o.TeatroID = t.ID WHERE o.ID = ?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setObject(1, valor);
+            ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) o = mapearObra(rs);
+                if (rs.next()) {
+                    o = mapearObra(rs);
+                    o.setNombreTeatro(rs.getString("nombreTeatro"));
+                }
             }
-        } catch (SQLException e) {
-            System.err.println("Error al buscar obra por " + columna + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
         return o;
     }
 
+
     private Obra mapearObra(ResultSet rs) throws SQLException {
         Obra o = new Obra();
-        try {
-            o.setId(rs.getInt("ID"));
-            o.setNombre(rs.getString("Nombre"));
-            o.setDescripcion(rs.getString("Descripcion"));
-            o.setDuracion(rs.getInt("Duracion"));
-            o.setFoto(rs.getBinaryStream("Foto"));
-            
-            int idEmp = rs.getInt("EmpleadoID");
-            o.setEmpleadoID(rs.wasNull() ? null : idEmp);
-            
-        } catch (SQLException e) {
-            System.err.println("Error en mapeo de Obra: " + e.getMessage());
-            throw e;
-        }
+        o.setId(rs.getInt("ID"));
+        o.setNombre(rs.getString("Nombre"));
+        o.setDescripcion(rs.getString("Descripcion"));
+        o.setDuracion(rs.getInt("Duracion"));
+        o.setFoto(rs.getBinaryStream("Foto"));
+        o.setEmpleadoID((Integer) rs.getObject("EmpleadoID"));
+        o.setTeatroID((Integer) rs.getObject("TeatroID"));
+        
         return o;
     }
 }

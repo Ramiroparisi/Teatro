@@ -9,20 +9,20 @@ public class Asiento implements Serializable {
 	private int id;
 	private String fila;
 	private int numero;
-	private int salaID;
+	private int teatroID;
 	
     public Asiento() {
     }
 
-    public Asiento(int numero, int salaID) {
+    public Asiento(int numero, int teatroID) {
         this.numero = numero;
-        this.salaID = salaID;
+        this.teatroID = teatroID;
     }
 
-    public Asiento(int id, int numero, int salaID) {
+    public Asiento(int id, int numero, int teatroID) {
         this.id = id;
         this.numero = numero;
-        this.salaID = salaID;
+        this.teatroID = teatroID;
     }
     
     public int getId() {
@@ -49,11 +49,11 @@ public class Asiento implements Serializable {
         this.numero = numero;
     }
 
-    public int getSalaID() {
-        return salaID;
+    public int getTeatroID() {
+        return teatroID;
     }
 
-    public void setSalaID(int salaID) {
-        this.salaID = salaID;
+    public void setTeatroID(int teatroID) {
+        this.teatroID = teatroID;
     }
 }

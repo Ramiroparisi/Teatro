@@ -7,37 +7,28 @@ import java.util.List;
 
 public class FuncionDAO {
 
-    public void add(Funcion f) throws SQLException {
-        String sql = "INSERT INTO Funcion (Fecha, Hora, Precio, ObraID, SalaID) VALUES (?, ?, ?, ?, ?)";
+	public void add(Funcion f) throws SQLException {
+        String sql = "INSERT INTO funcion (Fecha, Hora, Precio, ObraID) VALUES (?, ?, ?, ?)";
         Connection cn = DbConnector.getInstancia().getConn();
         
         try (PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setDate(1, f.getFecha());
             ps.setTime(2, f.getHora());
             ps.setBigDecimal(3, f.getPrecio());
-            
-            if (f.getObraID() != null) ps.setInt(4, f.getObraID()); 
-            else ps.setNull(4, Types.INTEGER);
-            
-            if (f.getSalaID() != null) ps.setInt(5, f.getSalaID()); 
-            else ps.setNull(5, Types.INTEGER);
+            ps.setInt(4, f.getObraID());
             
             ps.executeUpdate();
             
-            ResultSet rsID = ps.getGeneratedKeys();
-            if (rsID.next()) {
-                f.setId(rsID.getInt(1));
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) f.setId(rs.getInt(1));
             }
-        } catch (SQLException e) {
-            System.err.println("Error al insertar función: " + e.getMessage());
-            throw e; // Excepción para que el Servlet sepa que falló
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
     }
     
     public void put(Funcion f) {
-        String sql = "UPDATE Funcion SET Fecha=?, Hora=?, Precio=?, ObraID=?, SalaID=? WHERE ID=?";
+        String sql = "UPDATE Funcion SET Fecha=?, Hora=?, Precio=?, ObraID=? WHERE ID=?";
         Connection cn = DbConnector.getInstancia().getConn();
         try (PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setDate(1, f.getFecha());
@@ -47,10 +38,7 @@ public class FuncionDAO {
             if (f.getObraID() != null) ps.setInt(4, f.getObraID());
             else ps.setNull(4, Types.INTEGER);
             
-            if (f.getSalaID() != null) ps.setInt(5, f.getSalaID());
-            else ps.setNull(5, Types.INTEGER);
-            
-            ps.setInt(6, f.getId());
+            ps.setInt(5, f.getId());
             
             ps.executeUpdate();
         } catch (SQLException e) {
@@ -120,9 +108,6 @@ public class FuncionDAO {
               
             int idObra = rs.getInt("ObraID");
             f.setObraID(rs.wasNull() ? null : idObra);
-            
-            int idSala = rs.getInt("SalaID");
-            f.setSalaID(rs.wasNull() ? null : idSala);
         } catch (SQLException e) {
             System.err.println("Error en el mapeo de Funcion: " + e.getMessage());
             throw e;

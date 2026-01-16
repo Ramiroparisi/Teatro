@@ -11,23 +11,26 @@ public class Teatro implements Serializable {
 	private String direccion;
 	private String pais;
 	private String ciudad;
+	private int capacidad;
 	
 	public Teatro() {
     }
 
-    public Teatro(String nombre, String direccion, String pais, String ciudad) {
+    public Teatro(String nombre, String direccion, String pais, String ciudad, int capacidad) {
         this.nombre = nombre;
         this.direccion = direccion;
         this.pais = pais;
         this.ciudad = ciudad;
+        this.capacidad = capacidad;
     }
 
-    public Teatro(int id, String nombre, String direccion, String pais, String ciudad) {
+    public Teatro(int id, String nombre, String direccion, String pais, String ciudad, int capacidad) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
         this.pais = pais;
         this.ciudad = ciudad;
+        this.capacidad = capacidad;
     }
 
     public int getId() {
@@ -68,5 +71,13 @@ public class Teatro implements Serializable {
 
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
+    }
+    
+    public int getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(int capacidad) {
+        this.capacidad = capacidad;
     }
 }
