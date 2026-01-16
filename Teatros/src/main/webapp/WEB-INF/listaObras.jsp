@@ -1,14 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, com.teatro.modelo.Obra, com.teatro.modelo.Funcion, com.teatro.modelo.Usuario, java.text.SimpleDateFormat" %>
 <%
-    // Verificación de seguridad en el servidor
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
     if (user == null || !user.getRol().toString().equalsIgnoreCase("admin")) {
         response.sendRedirect(request.getContextPath() + "/login.jsp");
         return;
     }
     
-    // Preparar formateadores para las funciones
     SimpleDateFormat sdfFecha = new SimpleDateFormat("dd-MM-yyyy");
     SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
 %>
@@ -59,7 +57,7 @@
     <div class="header-actions">
         <a href="nuevaObra" class="btn btn-add"><i class="fas fa-plus"></i> Cargar Obra</a>
         <a href="nuevaFuncion" class="btn btn-add"><i class="fas fa-calendar-plus"></i> Cargar Función</a>
-        <a href="adminDashboard.jsp" class="btn btn-back">Volver</a>
+        <a href="adminDashboard" class="btn btn-back">Volver</a>
     </div>
 </div>
 
@@ -83,7 +81,7 @@
                 <p class="text-muted small mb-1"><strong>Cronograma de Funciones:</strong></p>
                 <div class="admin-funciones-list">
                     <% 
-                        List<Funcion> funciones = obra.getFunciones(); // Obtenidas mediante el JOIN en el DAO
+                        List<Funcion> funciones = obra.getFunciones();
                         if (funciones != null && !funciones.isEmpty()) {
                             for (Funcion f : funciones) { 
                     %>

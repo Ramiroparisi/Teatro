@@ -1,19 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.teatro.modelo.Usuario, com.teatro.modelo.Obra, com.teatro.modelo.Funcion, java.util.List, java.text.SimpleDateFormat" %>
 <%
-    // Gestión de Sesión
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
 
-    // Redirección de seguridad para Admin
     if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) {
         response.sendRedirect("adminDashboard.jsp");
         return; 
     }
-
-    // Recuperamos las obras enviadas por InicioServlet
     List<Obra> obras = (List<Obra>) request.getAttribute("obrasCartelera");
     
-    // Formateadores de Fecha y Hora
     SimpleDateFormat sdfFecha = new SimpleDateFormat("dd-MM-yyyy");
     SimpleDateFormat sdfHora = new SimpleDateFormat("HH:mm");
 %>
@@ -105,7 +100,6 @@
                                     <% 
                                     if (o.getFunciones() != null && !o.getFunciones().isEmpty()) {
                                         for (Funcion f : o.getFunciones()) { 
-                                            // Aplicación de formato DD-MM-AAAA y HH:MM
                                             String fechaFmt = sdfFecha.format(f.getFecha());
                                             String horaFmt = sdfHora.format(f.getHora());
                                     %>

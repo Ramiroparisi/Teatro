@@ -31,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 	        session.setAttribute("usuarioLogueado", u);
 	        
 	        if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("admin")) {
-	            response.sendRedirect("adminDashboard.jsp");
+	        	response.sendRedirect("adminDashboard");
 	        } 
 	        else  if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("cliente")) { 
 	            response.sendRedirect("index.jsp");
