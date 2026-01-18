@@ -134,4 +134,28 @@ public class AsientoDAO {
             DbConnector.getInstancia().releaseConn();
         }
     }
+    
+    public Asiento getById(int id) throws SQLException {
+        Asiento a = null;
+        String sql = "SELECT * FROM asiento WHERE ID = ?";
+        Connection cn = DbConnector.getInstancia().getConn();
+        
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    a = new Asiento();
+                    a.setId(rs.getInt("ID"));
+                    a.setNumero(rs.getInt("Numero"));
+                    a.setFilaNombre(rs.getString("fila_nombre"));
+                    a.setFilaCoord(rs.getInt("fila_coord"));
+                    a.setColCoord(rs.getInt("col_coord"));
+                    a.setTeatroID(rs.getInt("TeatroID")); 
+                }
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return a;
+    }
 }

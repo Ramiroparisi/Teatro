@@ -58,7 +58,6 @@ public class EntradaDAO {
             try {
                 e.setEstado(EstadoEntrada.valueOf(estadoDB)); 
             } catch (IllegalArgumentException ex) {
-                // Si texto en la bdd no coincide con el Enum, esto hace que la app no explote
                 System.err.println("Advertencia: El estado '" + estadoDB + "' no existe en el Enum EstadoEntrada.");
                 e.setEstado(null); 
             }
@@ -71,5 +70,50 @@ public class EntradaDAO {
         e.setAsientoID(rs.getInt("AsientoID"));
         
         return e;
+    }
+    
+
+    public void registrarCompra(Entrada e) throws SQLException {
+        String sql = "INSERT INTO entrada (FuncionID, AsientoID, UsuarioID, estado) VALUES (?, ?, ?, ?)";
+        Connection cn = DbConnector.getInstancia().getConn();
+        
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, e.getFuncionID());
+            ps.setInt(2, e.getAsientoID());
+            ps.setInt(3, e.getClienteID());
+            ps.setString(4, "Pagada"); 
+            
+            ps.executeUpdate();
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+    }
+
+
+    public List<Entrada> getEntradasPorUsuario(int usuarioId) throws SQLException {
+        List<Entrada> lista = new ArrayList<>();
+        String sql = "SELECT * FROM entrada WHERE UsuarioID = ? ORDER BY ID DESC";
+        
+        Connection cn = DbConnector.getInstancia().getConn();
+        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, usuarioId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Entrada e = new Entrada();
+                    e.setId(rs.getInt("ID"));
+                    e.setFuncionID(rs.getInt("FuncionID"));
+                    e.setAsientoID(rs.getInt("AsientoID"));
+                    String estadoBD = rs.getString("estado"); 
+                    if (estadoBD != null) {
+                        e.setEstado(EstadoEntrada.valueOf(estadoBD.toUpperCase()));
+                    }
+                    
+                    lista.add(e);
+                }
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return lista;
     }
 }
