@@ -48,7 +48,6 @@
             letter-spacing: 2px;
         }
 
-        /* Panel Fijo Lateral */
         .panel-fijo {
             position: sticky;
             top: 20px;

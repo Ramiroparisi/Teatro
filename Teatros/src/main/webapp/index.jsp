@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.teatro.modelo.Usuario, com.teatro.modelo.Obra, com.teatro.modelo.Funcion, java.util.List, java.text.SimpleDateFormat" %>
+<%@ page import="com.teatro.modelo.Usuario, com.teatro.modelo.Obra, com.teatro.modelo.Funcion, java.util.*, java.text.SimpleDateFormat" %>
 <%
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
 
@@ -27,10 +27,9 @@
         .obra-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
         .card-img-top { height: 320px; object-fit: cover; }
         .badge-teatro { background-color: #1abc9c; color: white; font-size: 0.8rem; border-radius: 50px; padding: 6px 14px; }
-        .funciones-container { max-height: 160px; overflow-y: auto; padding-right: 5px; }
         .btn-funcion { transition: all 0.2s; font-size: 0.85rem; border: 1px solid #dee2e6; }
         .btn-funcion:hover { background-color: #f8f9fa; border-color: #1abc9c; color: #1abc9c !important; }
-        .masthead { padding-top: calc(6rem + 74px); padding-bottom: 6rem; }
+        .filter-section { background: #f8f9fa; border-radius: 20px; padding: 30px; margin-bottom: 50px; border: 1px solid #e9ecef; }
     </style>
 </head>
 <body id="page-top">
@@ -44,7 +43,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#obras">Cartelera</a></li>
                     <% if (user != null) { %>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="mis-entradas">Mis Compras</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="misEntradas">Mis Compras</a></li>
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="logout" style="color: #ffc107;">Salir</a></li>
                     <% } else { %>
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="login.jsp" style="color: #6dabe4; font-weight: bold;">Iniciar Sesión</a></li>
@@ -56,97 +55,153 @@
 
     <header class="masthead bg-primary text-white text-center">
         <div class="container d-flex align-items-center flex-column">
-            <img class="masthead-avatar mb-5" src="assets/img/avataaars.svg" alt="..." style="width: 180px;" />
             <h1 class="masthead-heading text-uppercase mb-0">
-                <%= (user != null) ? "Bienvenido, " + user.getNombre() : "Bienvenido a Rosario en cartel" %>
+                <%= (user != null) ? "Bienvenido, " + user.getNombre() : "Rosario en cartel" %>
             </h1>
             <div class="divider-custom divider-light">
                 <div class="divider-custom-line"></div>
                 <div class="divider-custom-icon"><i class="fas fa-theater-masks"></i></div>
                 <div class="divider-custom-line"></div>
             </div>
-            <p class="masthead-subheading font-weight-light mb-0">La cartelera completa de Rosario en un solo lugar</p>
+            <p class="masthead-subheading font-weight-light mb-0">Encuentra tu próxima función favorita</p>
         </div>
     </header>
 
     <section class="page-section" id="obras">
         <div class="container">
             <h2 class="page-section-heading text-center text-uppercase text-secondary mb-0">Cartelera Actual</h2>
-            <p class="text-center text-uppercase"> Para añadir entradas al carrito, presiona sobre la función que deseas comprar </p>
             <div class="divider-custom">
                 <div class="divider-custom-line"></div>
                 <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
                 <div class="divider-custom-line"></div>
             </div>
 
-            <div class="row justify-content-center">
+            <div class="filter-section shadow-sm">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted small">TEATRO</label>
+                        <select id="filterTeatro" class="form-select border-0 shadow-sm">
+                            <option value="all">Todos los teatros</option>
+                            <% 
+                               Set<String> teatros = new HashSet<>();
+                               if(obras != null) for(Obra o : obras) teatros.add(o.getNombreTeatro());
+                               for(String t : teatros) { 
+                            %>
+                                <option value="<%= t %>"><%= t %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small">FECHA DESDE</label>
+                        <input type="date" id="filterDesde" class="form-control border-0 shadow-sm">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-muted small">FECHA HASTA</label>
+                        <input type="date" id="filterHasta" class="form-control border-0 shadow-sm">
+                    </div>
+                    <div class="col-md-2">
+                        <button onclick="limpiarFiltros()" class="btn btn-secondary w-100">Limpiar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="contenedorObras">
                 <% if (obras != null && !obras.isEmpty()) { 
-                    for (Obra o : obras) { %>
-                    <div class="col-md-6 col-lg-4 mb-5">
+                    for (Obra o : obras) { 
+                        // Guardamos las fechas de sus funciones para el filtro JS
+                        StringBuilder fechasStr = new StringBuilder();
+                        if(o.getFunciones() != null) {
+                            for(Funcion f : o.getFunciones()) fechasStr.append(f.getFecha().toString()).append(",");
+                        }
+                %>
+                    <div class="col-md-6 col-lg-4 mb-5 obra-item" 
+                         data-teatro="<%= o.getNombreTeatro() %>" 
+                         data-fechas="<%= fechasStr.toString() %>">
+                        
                         <div class="card h-100 obra-card">
                             <img class="card-img-top" src="verImagen?id=<%= o.getId() %>" alt="<%= o.getNombre() %>">
-                            
                             <div class="card-body text-center d-flex flex-column">
                                 <div class="mb-2">
-                                    <span class="badge-teatro">
-                                        <i class="fas fa-landmark"></i> <%= (o.getNombreTeatro() != null) ? o.getNombreTeatro() : "Teatro Rosario" %>
-                                    </span>
+                                    <span class="badge-teatro"><i class="fas fa-landmark"></i> <%= o.getNombreTeatro() %></span>
                                 </div>
                                 <h4 class="card-title text-uppercase mt-2"><%= o.getNombre() %></h4>
-                                <p class="text-muted small"><%= o.getDuracion() %> min. de duración</p>
-                                
                                 <hr>
-                                <h6 class="text-muted mb-3">Funciones Disponibles:</h6>
-                                <div class="funciones-container mb-3">
-                                    <% 
-                                    if (o.getFunciones() != null && !o.getFunciones().isEmpty()) {
-                                        for (Funcion f : o.getFunciones()) { 
-                                            String fechaFmt = sdfFecha.format(f.getFecha());
-                                            String horaFmt = sdfHora.format(f.getHora());
-                                    %>
-                                        <a href="seleccionarAsientos?funcionId=<%= f.getId() %>" 
-                                           class="btn btn-light btn-funcion d-block mb-2 text-decoration-none text-dark py-2">
-                                           <i class="far fa-calendar-alt me-1"></i> <%= fechaFmt %> | 
-                                           <i class="far fa-clock me-1"></i> <%= horaFmt %>hs 
-                                        </a>
-                                    <% 
-                                        }
-                                    } else { 
-                                    %>
-                                        <p class="small text-danger italic">Sin funciones próximas</p>
-                                    <% } %>
+                                <div class="funciones-list mb-3">
+                                    <% if (o.getFunciones() != null) {
+                                        for (Funcion f : o.getFunciones()) { %>
+                                            <a href="seleccionarAsientos?funcionId=<%= f.getId() %>" 
+                                               class="btn btn-light btn-funcion d-block mb-2 text-dark py-2">
+                                               <%= sdfFecha.format(f.getFecha()) %> | <%= sdfHora.format(f.getHora()) %>hs 
+                                            </a>
+                                    <% } } %>
                                 </div>
-                                
                                 <div class="mt-auto">
-                                    <a href="detallesObra?id=<%= o.getId() %>" class="btn btn-outline-secondary btn-sm w-100 rounded-pill">
-                                        Más información
-                                    </a>
+                                    <a href="detallesObra?id=<%= o.getId() %>" class="btn btn-outline-secondary btn-sm w-100 rounded-pill">Más info</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                <% } 
-                } else { %>
-                    <div class="col-12 text-center py-5">
-                        <p class="lead text-muted">No hay obras disponibles en este momento.</p>
-                        <a href="inicio" class="btn btn-primary rounded-pill">Recargar Página</a>
-                    </div>
-                <% } %>
+                <% } } %>
+            </div>
+            
+            <div id="noResults" class="text-center py-5 d-none">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="lead text-muted">No se encontraron funciones para los filtros seleccionados.</p>
             </div>
         </div>
     </section>
 
     <footer class="footer text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h4 class="text-uppercase mb-4">Rosario en Cartel</h4>
-                    <p class="lead mb-0">Tu entrada al teatro, más fácil que nunca.</p>
-                </div>
-            </div>
-        </div>
+        <div class="container"><p class="lead mb-0">Rosario en Cartel &copy; 2026</p></div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    function filtrar() {
+        const teatro = document.getElementById('filterTeatro').value;
+        const desde = document.getElementById('filterDesde').value;
+        const hasta = document.getElementById('filterHasta').value;
+        const items = document.querySelectorAll('.obra-item');
+        let visibles = 0;
+
+        items.forEach(item => {
+            const itemTeatro = item.getAttribute('data-teatro');
+            const itemFechas = item.getAttribute('data-fechas').split(',').filter(f => f !== "");
+            
+            const matchTeatro = (teatro === 'all' || itemTeatro === teatro);
+            
+            let matchFecha = true;
+            if (desde || hasta) {
+                matchFecha = itemFechas.some(f => {
+                    if (desde && hasta) return f >= desde && f <= hasta;
+                    if (desde) return f >= desde;
+                    if (hasta) return f <= hasta;
+                    return true;
+                });
+            }
+
+            if (matchTeatro && matchFecha) {
+                item.classList.remove('d-none');
+                visibles++;
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+
+        document.getElementById('noResults').classList.toggle('d-none', visibles > 0);
+    }
+
+    function limpiarFiltros() {
+        document.getElementById('filterTeatro').value = 'all';
+        document.getElementById('filterDesde').value = '';
+        document.getElementById('filterHasta').value = '';
+        filtrar();
+    }
+
+    document.getElementById('filterTeatro').addEventListener('change', filtrar);
+    document.getElementById('filterDesde').addEventListener('change', filtrar);
+    document.getElementById('filterHasta').addEventListener('change', filtrar);
+    </script>
 </body>
 </html>

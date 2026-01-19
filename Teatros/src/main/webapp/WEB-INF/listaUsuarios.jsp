@@ -35,7 +35,6 @@
 <div class="header">
     <h1>Administración de Usuarios</h1>
     <div class="header-actions">
-        <a href="nuevoUsuario.jsp" class="btn-add">+ Nuevo Usuario</a>
         <a href="adminDashboard" class="btn-back">Volver</a>
     </div>
 </div>

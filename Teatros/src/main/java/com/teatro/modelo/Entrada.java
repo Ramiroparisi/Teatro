@@ -1,29 +1,30 @@
 package com.teatro.modelo;
 
 import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Time;
 
 public class Entrada implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private int id;
+    
+    private static final long serialVersionUID = 1L;
+    
+    private int id;
     private EstadoEntrada estado; 
     private int clienteID;
     private int funcionID;
     private int asientoID;
     
+
+    private String nombreObra;
+    private Date fecha;   
+    private Time hora;
+    private String filaNombre;
+    private int asientoNum;
+    
     public Entrada() {
     }
 
     public Entrada(EstadoEntrada estado, int clienteID, int funcionID, int asientoID) {
-        this.estado = estado;
-        this.clienteID = clienteID;
-        this.funcionID = funcionID;
-        this.asientoID = asientoID;
-    }
-
-    public Entrada(int id, EstadoEntrada estado, int clienteID, int funcionID, int asientoID) {
-        this.id = id;
         this.estado = estado;
         this.clienteID = clienteID;
         this.funcionID = funcionID;
@@ -68,5 +69,47 @@ public class Entrada implements Serializable {
 
     public void setAsientoID(int asientoID) {
         this.asientoID = asientoID;
+    }
+
+
+    
+    public String getNombreObra() {
+        return nombreObra;
+    }
+
+    public void setNombreObra(String nombreObra) {
+        this.nombreObra = nombreObra;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public Time getHora() {
+        return hora;
+    }
+
+    public void setHora(Time hora) {
+        this.hora = hora;
+    }
+
+    public String getFilaNombre() {
+        return filaNombre;
+    }
+
+    public void setFilaNombre(String filaNombre) {
+        this.filaNombre = filaNombre;
+    }
+
+    public int getAsientoNum() {
+        return asientoNum;
+    }
+
+    public void setAsientoNum(int asientoNum) {
+        this.asientoNum = asientoNum;
     }
 }

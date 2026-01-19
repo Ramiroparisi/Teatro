@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.preference.PreferenceClient;
+
 @WebServlet("/confirmarCompra")
 public class ConfirmarCompraServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -25,7 +28,6 @@ public class ConfirmarCompraServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
 
-        // 1. Protección: Si no hay usuario, redirigir al login
         if (user == null) {
             response.sendRedirect("login.jsp?error=sesion_expirada");
             return;
@@ -41,12 +43,8 @@ public class ConfirmarCompraServlet extends HttpServlet {
 
         try {
             int idFuncion = Integer.parseInt(idFuncionStr);
-            
-            // 2. Obtener datos de la Función
             FuncionDAO fdao = new FuncionDAO();
             Funcion funcion = fdao.getByID(idFuncion);
-
-            // 3. Obtener objetos Asiento completos desde los IDs
             AsientoDAO adao = new AsientoDAO();
             List<Asiento> listaAsientos = new ArrayList<>();
             String[] arrayIds = idsAsientosStr.split(",");
@@ -60,21 +58,15 @@ public class ConfirmarCompraServlet extends HttpServlet {
                 }
             }
 
-            // 4. Calcular Total
             double precioUnidad = funcion.getPrecio().doubleValue();
             double totalPagar = precioUnidad * listaAsientos.size();
-
-            // 5. Guardar en Sesión para el paso final (FinalizarPagoServlet)
-            // Guardamos el String de IDs porque es más fácil de procesar luego
             session.setAttribute("asientos_seleccionados_ids", idsAsientosStr);
             session.setAttribute("funcion_actual", funcion);
             session.setAttribute("monto_total", totalPagar);
-
-            // 6. Pasar datos al JSP para el resumen visual
             request.setAttribute("asientosDetalle", listaAsientos);
             request.setAttribute("total", totalPagar);
             
-            request.getRequestDispatcher("/WEB-INF/confirmarCompra.jsp").forward(request, response);
+            request.getRequestDispatcher("/prepararPago").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

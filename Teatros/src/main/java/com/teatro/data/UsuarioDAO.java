@@ -194,4 +194,15 @@ public class UsuarioDAO {
         }
         return u;
     }
+    
+    public int getCountClientes() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM usuario WHERE rol = 'CLIENTE'";
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? rs.getInt(1) : 0;
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+    }
 }

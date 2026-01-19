@@ -52,6 +52,37 @@ public class ObraDAO {
             DbConnector.getInstancia().releaseConn();
         }
     }
+    
+    public void update(Obra obra) throws SQLException {
+        String sql;
+        boolean tieneFoto = obra.getFoto() != null;
+
+        if (tieneFoto) {
+            sql = "UPDATE obra SET nombre=?, descripcion=?, duracion=?, teatroID=?, foto=? WHERE ID=?";
+        } else {
+            sql = "UPDATE obra SET nombre=?, descripcion=?, duracion=?, teatroID=? WHERE ID=?";
+        }
+
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            
+            ps.setString(1, obra.getNombre());
+            ps.setString(2, obra.getDescripcion());
+            ps.setInt(3, obra.getDuracion());
+            ps.setInt(4, obra.getTeatroID());
+
+            if (tieneFoto) {
+                ps.setBlob(5, obra.getFoto());
+                ps.setInt(6, obra.getId());
+            } else {
+                ps.setInt(5, obra.getId());
+            }
+            
+            ps.executeUpdate();
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+    }
 
     public void delete(int id) throws SQLException {
         String sql = "DELETE FROM Obra WHERE ID = ?";
@@ -138,5 +169,36 @@ public class ObraDAO {
         o.setTeatroID((Integer) rs.getObject("TeatroID"));
         
         return o;
+    }
+    
+    public boolean tieneFuncionesAsociadas(int obraId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM funcion WHERE ObraID = ?";
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, obraId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return false;
+    }
+    
+    public int getCountObrasConFunciones() throws SQLException {
+        String sql = "SELECT COUNT(DISTINCT o.ID) FROM obra o " +
+                     "JOIN funcion f ON o.ID = f.ObraID " +
+                     "WHERE f.fecha >= CURDATE()";
+                     
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            
+            return rs.next() ? rs.getInt(1) : 0;
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
     }
 }

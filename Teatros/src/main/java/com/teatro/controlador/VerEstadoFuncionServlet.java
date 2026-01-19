@@ -34,21 +34,22 @@ public class VerEstadoFuncionServlet extends HttpServlet {
             FuncionDAO fdao = new FuncionDAO();
             Funcion funcion = fdao.getByID(funcionId);
             if (funcion == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "La función no existe.");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Función no encontrada.");
                 return;
             }
 
             ObraDAO odao = new ObraDAO();
             Obra obra = odao.getByID(funcion.getObraID());
             if (obra == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "La obra asociada no existe.");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Obra no encontrada.");
                 return;
             }
 
             int teatroId = obra.getTeatroID();
             AsientoDAO adao = new AsientoDAO();
             List<Asiento> asientos = adao.getEstadoAsientos(teatroId, funcionId);
-            if (asientos.isEmpty()) {
+            if (asientos == null || asientos.isEmpty()) {
+                System.out.println("Teatro sin asientos detectado. Generando para Teatro ID: " + teatroId);
                 adao.generarAsientosDeTeatro(teatroId);
                 asientos = adao.getEstadoAsientos(teatroId, funcionId);
             }
@@ -56,12 +57,14 @@ public class VerEstadoFuncionServlet extends HttpServlet {
             request.setAttribute("funcion", funcion);
             request.setAttribute("obra", obra);
             request.setAttribute("asientos", asientos);
-            
             request.getRequestDispatcher("/WEB-INF/verEstadoFuncion.jsp").forward(request, response);
 
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de función inválido.");
         } catch (Exception e) {
+            System.err.println("Error en VerEstadoFuncionServlet:");
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno: " + e.getMessage());
         }
     }
 }

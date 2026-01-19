@@ -74,39 +74,63 @@ public class EntradaDAO {
     
 
     public void registrarCompra(Entrada e) throws SQLException {
-        String sql = "INSERT INTO entrada (FuncionID, AsientoID, UsuarioID, estado) VALUES (?, ?, ?, ?)";
-        Connection cn = DbConnector.getInstancia().getConn();
+        String sqlEntrada = "INSERT INTO entrada (FuncionID, AsientoID, ClienteID, estado) VALUES (?, ?, ?, ?)";
         
-        try (PreparedStatement ps = cn.prepareStatement(sql)) {
-            ps.setInt(1, e.getFuncionID());
-            ps.setInt(2, e.getAsientoID());
-            ps.setInt(3, e.getClienteID());
-            ps.setString(4, "Pagada"); 
-            
-            ps.executeUpdate();
+        Connection cn = DbConnector.getInstancia().getConn();
+        try {
+            cn.setAutoCommit(false);
+            try (PreparedStatement psE = cn.prepareStatement(sqlEntrada)) {
+                psE.setInt(1, e.getFuncionID());
+                psE.setInt(2, e.getAsientoID());
+                psE.setInt(3, e.getClienteID());
+                psE.setString(4, e.getEstado() != null ? e.getEstado().name() : "Pagada"); 
+                psE.executeUpdate();
+            }
+            cn.commit();
+            System.out.println("Entrada registrada con éxito.");
+        } catch (SQLException ex) {
+            if (cn != null) cn.rollback();
+            throw ex;
         } finally {
+            if (cn != null) cn.setAutoCommit(true);
             DbConnector.getInstancia().releaseConn();
         }
     }
 
 
-    public List<Entrada> getEntradasPorUsuario(int usuarioId) throws SQLException {
+    public List<Entrada> getEntradasDetalladasPorUsuario(int usuarioId) throws SQLException {
         List<Entrada> lista = new ArrayList<>();
-        String sql = "SELECT * FROM entrada WHERE UsuarioID = ? ORDER BY ID DESC";
-        
-        Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+        String sql = "SELECT e.ID, e.Estado, e.AsientoID, e.FuncionID, " +
+                     "f.fecha, f.hora, o.nombre AS nombre_obra, " + 
+                     "a.fila_nombre, a.Numero AS asiento_num " +
+                     "FROM entrada e " +
+                     "JOIN funcion f ON e.FuncionID = f.ID " +
+                     "JOIN obra o ON f.ObraID = o.ID " +
+                     "JOIN asiento a ON e.AsientoID = a.ID " +
+                     "WHERE e.ClienteID = ? " +
+                     "ORDER BY f.fecha DESC, f.hora DESC";
+
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            
             ps.setInt(1, usuarioId);
+            
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Entrada e = new Entrada();
                     e.setId(rs.getInt("ID"));
-                    e.setFuncionID(rs.getInt("FuncionID"));
-                    e.setAsientoID(rs.getInt("AsientoID"));
-                    String estadoBD = rs.getString("estado"); 
-                    if (estadoBD != null) {
-                        e.setEstado(EstadoEntrada.valueOf(estadoBD.toUpperCase()));
+                    String estadoStr = rs.getString("Estado");
+                    if (estadoStr != null) {
+                        e.setEstado(EstadoEntrada.valueOf(estadoStr));
                     }
+
+                    e.setAsientoID(rs.getInt("AsientoID"));
+                    e.setFuncionID(rs.getInt("FuncionID"));
+                    e.setNombreObra(rs.getString("nombre_obra"));
+                    e.setFecha(rs.getDate("fecha"));
+                    e.setHora(rs.getTime("hora"));
+                    e.setFilaNombre(rs.getString("fila_nombre"));
+                    e.setAsientoNum(rs.getInt("asiento_num"));
                     
                     lista.add(e);
                 }
