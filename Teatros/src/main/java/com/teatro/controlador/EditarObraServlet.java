@@ -27,7 +27,7 @@ public class EditarObraServlet extends HttpServlet {
             
             if (obra != null) {
                 request.setAttribute("obra", obra);
-                request.getRequestDispatcher("/WEB-INF/editarObra.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/Admin/editarObra.jsp").forward(request, response);
             } else {
                 response.sendRedirect("listaObras?status=not_found");
             }

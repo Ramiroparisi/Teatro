@@ -67,9 +67,6 @@
                     <td class="location-text"><%= (t.getPais() != null) ? t.getPais() : "-" %></td>
                     <td><span class="badge"><i class="fas fa-chair"></i> <%= t.getCapacidad() %></span></td>
                     <td style="text-align: center; white-space: nowrap;">
-                        <a href="diagramarTeatro?id=<%= t.getId() %>" class="btn btn-primary" title="Configurar Plano">
-                            <i class="fas fa-th"></i> Plano
-                        </a>
                         <a href="editarTeatro?id=<%= t.getId() %>" style="color: #f39c12; margin-left: 12px;" title="Editar">
                             <i class="fas fa-edit"></i>
                         </a>

@@ -21,7 +21,7 @@ public class TeatroServlet extends HttpServlet {
             List<Teatro> lista = tdao.getAll();
             
             request.setAttribute("listaTeatros", lista);
-            request.getRequestDispatcher("/WEB-INF/listaTeatros.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/listaTeatros.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();

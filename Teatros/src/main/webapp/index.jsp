@@ -7,6 +7,12 @@
        response.sendRedirect("adminDashboard"); 
        return;
     }
+    
+    if (request.getAttribute("obrasCartelera") == null) {
+        response.sendRedirect("inicio");
+        return;
+    }
+    
     List<Obra> obras = (List<Obra>) request.getAttribute("obrasCartelera");
     
     SimpleDateFormat sdfFecha = new SimpleDateFormat("dd-MM-yyyy");
@@ -108,7 +114,6 @@
             <div class="row justify-content-center" id="contenedorObras">
                 <% if (obras != null && !obras.isEmpty()) { 
                     for (Obra o : obras) { 
-                        // Guardamos las fechas de sus funciones para el filtro JS
                         StringBuilder fechasStr = new StringBuilder();
                         if(o.getFunciones() != null) {
                             for(Funcion f : o.getFunciones()) fechasStr.append(f.getFecha().toString()).append(",");

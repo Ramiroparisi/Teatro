@@ -29,6 +29,6 @@ public class UsuarioServlet extends HttpServlet {
         List<Usuario> lista = udao.getAll();
         
         request.setAttribute("listaUsuarios", lista);
-        request.getRequestDispatcher("/WEB-INF/listaUsuarios.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/Admin/listaUsuarios.jsp").forward(request, response);
     }
 }

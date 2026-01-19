@@ -69,14 +69,25 @@ public class FuncionDAO {
         return findByColumn("ID", id);
     }
     
-    public void delete(int id) {
-        String sql = "DELETE FROM Funcion WHERE ID = ?";
-        Connection cn = DbConnector.getInstancia().getConn();
-        try (PreparedStatement ps = cn.prepareStatement(sql)) {
+    public boolean tieneEntradasVendidas(int funcionId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM entrada WHERE FuncionID = ?";
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setInt(1, funcionId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+    }
+
+    public void delete(int id) throws SQLException {
+        String sql = "DELETE FROM funcion WHERE ID = ?";
+        try (Connection cn = DbConnector.getInstancia().getConn();
+             PreparedStatement ps = cn.prepareStatement(sql)) {
             ps.setInt(1, id);
             ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar función ID " + id + ": " + e.getMessage());
         } finally {
             DbConnector.getInstancia().releaseConn();
         }

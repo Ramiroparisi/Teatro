@@ -24,7 +24,7 @@ public class ObraServlet extends HttpServlet {
             }
 
             request.setAttribute("listaObras", lista);
-            request.getRequestDispatcher("/WEB-INF/listaObras.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/listaObras.jsp").forward(request, response);
             
         } catch (Exception e) {
             e.printStackTrace();

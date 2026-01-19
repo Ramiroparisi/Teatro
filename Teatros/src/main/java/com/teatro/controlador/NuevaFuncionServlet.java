@@ -26,7 +26,7 @@ public class NuevaFuncionServlet extends HttpServlet {
             request.setAttribute("listaObras", odao.getAllWithFunciones()); 
             
             request.setAttribute("listaTeatros", new TeatroDAO().getAll());
-            request.getRequestDispatcher("/WEB-INF/nuevaFuncion.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/nuevaFuncion.jsp").forward(request, response);
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(500, "Error de base de datos al cargar el formulario");
@@ -38,9 +38,8 @@ public class NuevaFuncionServlet extends HttpServlet {
         try {
             Funcion f = new Funcion();
             
-            // 1. CAPTURAR LOS IDS DEL FORMULARIO
             f.setObraID(Integer.parseInt(request.getParameter("idObra")));
-            f.setTeatroID(Integer.parseInt(request.getParameter("idTeatro"))); // ESTA LÍNEA FALTA EN TU CÓDIGO
+            f.setTeatroID(Integer.parseInt(request.getParameter("idTeatro")));
             
             f.setPrecio(new BigDecimal(request.getParameter("precio")));
 
@@ -55,7 +54,7 @@ public class NuevaFuncionServlet extends HttpServlet {
             response.sendRedirect("listaObras"); 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error al crear función: " + e.getMessage());
+            request.setAttribute("error", "Error al crear función: Ya existe una función asignada para ese teatro en esa fecha y hora");
             doGet(request, response);
         }
     }

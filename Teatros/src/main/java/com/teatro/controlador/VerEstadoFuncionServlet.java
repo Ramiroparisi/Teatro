@@ -57,7 +57,7 @@ public class VerEstadoFuncionServlet extends HttpServlet {
             request.setAttribute("funcion", funcion);
             request.setAttribute("obra", obra);
             request.setAttribute("asientos", asientos);
-            request.getRequestDispatcher("/WEB-INF/verEstadoFuncion.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/verEstadoFuncion.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de función inválido.");

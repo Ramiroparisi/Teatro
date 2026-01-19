@@ -25,7 +25,7 @@ public class NuevaObraServlet extends HttpServlet {
             List<Teatro> lista = tdao.getAll();
             request.setAttribute("listaTeatros", lista);
             
-            request.getRequestDispatcher("/WEB-INF/nuevaObra.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/nuevaObra.jsp").forward(request, response);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener teatros");
         }

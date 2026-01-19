@@ -31,7 +31,7 @@ public class EditarUsuarioServlet extends HttpServlet {
             
             if (u != null) {
                 request.setAttribute("usuarioAEmitir", u);
-                request.getRequestDispatcher("editarUsuario.jsp").forward(request, response);
+                request.getRequestDispatcher("WEB-INF/Admin/editarUsuario.jsp").forward(request, response);
             } else {
                 response.sendRedirect("listaUsuarios");
             }

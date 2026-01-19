@@ -29,7 +29,7 @@ public class MisEntradasServlet extends HttpServlet {
             List<Entrada> lista = edao.getEntradasDetalladasPorUsuario(user.getId());
             
             request.setAttribute("misTickets", lista);
-            request.getRequestDispatcher("/WEB-INF/misEntradas.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Cliente/misEntradas.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();

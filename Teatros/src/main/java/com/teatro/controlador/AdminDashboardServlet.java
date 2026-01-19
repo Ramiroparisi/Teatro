@@ -37,7 +37,7 @@ public class AdminDashboardServlet extends HttpServlet {
 
             request.setAttribute("cantObras", cantObrasActivas);
             request.setAttribute("cantClientes", cantClientes);
-            request.getRequestDispatcher("/WEB-INF/adminDashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Admin/adminDashboard.jsp").forward(request, response);
 
         } catch (SQLException e) {
             e.printStackTrace();

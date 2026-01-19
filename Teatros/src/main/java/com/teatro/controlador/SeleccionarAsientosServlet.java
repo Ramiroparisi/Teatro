@@ -53,7 +53,7 @@ public class SeleccionarAsientosServlet extends HttpServlet {
             request.setAttribute("obra", obra);
             request.setAttribute("asientos", asientos);
             
-            request.getRequestDispatcher("/WEB-INF/seleccionarAsiento.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/Cliente/seleccionarAsiento.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
