@@ -39,7 +39,7 @@
             <nav class="col-md-2 d-none d-md-block sidebar shadow">
                 <div class="text-center mb-4">
                     <i class="fas fa-user-shield fa-3x text-info"></i>
-                    <h5 class="mt-2 text-white">Panel Admin</h5>
+                    <h5 class="mt-2 text-white">Panel de Administrador</h5>
                     <small class="text-muted text-uppercase fw-bold"><%= user.getRol() %></small>
                 </div>
                 <hr class="bg-light">
@@ -50,14 +50,13 @@
                 <a href="listaTeatros"><i class="fas fa-landmark me-2"></i> Teatros</a>
                 
                 <hr class="bg-light">
-                <a href="inicio"><i class="fas fa-eye me-2"></i> Ver Sitio Público</a>
+                <a href="inicio" target="_blank"><i class="fas fa-eye me-2"></i> Ver sitio público</a>
                 <a href="logout" class="text-warning"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a>
             </nav>
 
             <main class="col-md-10 px-md-4 py-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">Bienvenido, <%= user.getNombre() %></h1>
-                    <div class="text-muted"><i class="far fa-calendar-alt me-1"></i> Panel de Control Real-Time</div>
                 </div>
 
                 <div class="row">
@@ -68,9 +67,8 @@
                                     <div>
                                         <h6 class="card-title text-uppercase opacity-75 small">Obras en Cartelera</h6>
                                         <h2 class="mb-0 fw-bold"><%= obrasActivas %></h2>
-                                        <p class="small mb-0 mt-2"><i class="fas fa-check-circle"></i> Con funciones activas</p>
+                                        <p class="small mb-0 mt-2"> Con funciones activas</p>
                                     </div>
-                                    <i class="fas fa-play-circle fa-3x opacity-25"></i>
                                 </div>
                             </div>
                         </a>
@@ -83,49 +81,14 @@
                                     <div>
                                         <h6 class="card-title text-uppercase opacity-75 small">Total Clientes</h6>
                                         <h2 class="mb-0 fw-bold"><%= clientesTotales %></h2>
-                                        <p class="small mb-0 mt-2"><i class="fas fa-user-check"></i> Usuarios registrados</p>
+                                        <p class="small mb-0 mt-2"> Usuarios registrados</p>
                                     </div>
-                                    <i class="fas fa-user-plus fa-3x opacity-25"></i>
                                 </div>
                             </div>
                         </a>
                     </div>
                 </div>
 
-                <div class="card admin-card mt-4">
-                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 text-secondary fw-bold">Últimas Ventas Realizadas</h5>
-                        <span class="badge bg-light text-dark border">Historial reciente</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>ID Ticket</th>
-                                        <th>Cliente</th>
-                                        <th>Fecha Venta</th>
-                                        <th>Monto Total</th>
-                                        <th class="text-center">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <%-- Aquí podrías iterar una lista de Ventas --%>
-                                    <tr>
-                                        <td><strong>#1024</strong></td>
-                                        <td>Ejemplo Cliente</td>
-                                        <td>18/01/2026</td>
-                                        <td class="text-success fw-bold">$ 3.500</td>
-                                        <td class="text-center">
-                                            <span class="badge rounded-pill bg-success px-3">Completada</span>
-                                        </td>
-                                    </tr>
-                                    <%-- Si no hay ventas, mostrar mensaje --%>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     </div>

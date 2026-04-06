@@ -3,11 +3,11 @@
 <%
     Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
 
-    if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) {
+  /*  if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) {
        response.sendRedirect("adminDashboard"); 
        return;
     }
-    
+    */
     if (request.getAttribute("obrasCartelera") == null) {
         response.sendRedirect("inicio");
         return;
@@ -25,34 +25,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Rosario en Cartel - Inicio</title>
     <link rel="icon" type="image/png" href="images/icons8-teatro-48.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
     <link href="css/index-styles.css" rel="stylesheet" />
+    
     <style>
-        .obra-card { transition: all 0.3s ease; border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .obra-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    	#mainNav {background: linear-gradient(135deg, #800000 0%, #000000 100%) !important;}
+    	
+    	.masthead {background: radial-gradient(circle at center, #960303 0%, #4a0000 70%, #200000 100%) !important; padding-top: calc(8rem + 74px); padding-bottom: 8rem; position: relative;}
+    	
+    	.masthead-heading {text-shadow: 0 0 20px rgba(217, 194, 2, 0.4); letter-spacing: 2px;}
+    	
+    	.divider-custom .divider-custom-line {background-color: #D9C202 !important;}
+        
+        .divider-custom .divider-custom-icon {color: #D9C202 !important;}
+        
+         body { background-color: #FDFCF0 !important; font-family: 'Montserrat', sans-serif; }
+        
+         h1, h2, .navbar-brand {font-family: 'Playfair Display', serif;}
+        
+        .obra-card {transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid #e0dcc5; border-radius: 20px; overflow: hidden; background-color: #ffffff; box-shadow: 0 10px 20px rgba(0,0,0,0.05);}
+		
+		.card-title { color: #800000; font-weight: 700; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        
+        .obra-card:hover {transform: translateY(-12px); box-shadow: 0 20px 40px rgba(128,0,0,0.25); border-color: #D9C202;}
+        
         .card-img-top { height: 320px; object-fit: cover; }
-        .badge-teatro { background-color: #1abc9c; color: white; font-size: 0.8rem; border-radius: 50px; padding: 6px 14px; }
-        .btn-funcion { transition: all 0.2s; font-size: 0.85rem; border: 1px solid #dee2e6; }
-        .btn-funcion:hover { background-color: #f8f9fa; border-color: #1abc9c; color: #1abc9c !important; }
-        .filter-section { background: #f8f9fa; border-radius: 20px; padding: 30px; margin-bottom: 50px; border: 1px solid #e9ecef; }
+        
+        .badge-teatro {background-color: #2c3e50; color: #D9C202; font-size: 0.8rem; border-radius: 4px; padding: 6px 12px; border: 1px solid #D9C202; text-transform: uppercase;font-weight: bold;}
+        
+        .btn-funcion { background-color: #D9C202 !important; color: #000 !important; border: 2px #800000 !important; font-weight: 800; box-shadow: 3px 3px 0px #4a0000; margin-bottom: 12px; border-radius: 8px;}
+        
+        .btn-funcion:hover {background-color: #f1e05a !important; transform: scale(1.03); box-shadow: 1px 1px 0px #4a0000;}
+        
+        .filter-section {background: #ffffff; border-radius: 15px; padding: 30px; margin-bottom: 50px; border: 2px solid #D9C202; box-shadow: 0 5px 15px rgba(0,0,0,0.1);}
+		
+		.btn-outline-secondary { color: #800000; border-color: #800000; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+    	
+    	.btn-outline-secondary:hover { background-color: #800000; color: #D9C202; }
+    	
+    	.alerta-admin {background-color: #FF0000; color: #000; text-align: center; padding: 12px; font-weight: bold; position: sticky; top: 0; z-index: 2000; font-family: 'Montserrat', sans-serif;}
+
+		.btn-volver-admin { background-color: #ffffff; color: black !important; padding: 5px 15px; border-radius: 20px; margin-left: 15px; font-size: 0.8rem;}
+		
+		.btn-volver-admin:hover {background-color: #BFBFBF;
     </style>
+    
 </head>
+
 <body id="page-top">
+	<% if (user != null && user.getRol() != null && user.getRol().toString().equalsIgnoreCase("admin")) { %>
+    	<div class="alerta-admin">
+        	MODO VISTA PREVIA (ADMINISTRADOR)
+        	<a href="adminDashboard" class="btn-volver-admin">VOLVER AL PANEL</a>
+    	</div> <% } %>
+    	
     <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
         <div class="container">
-            <a class="navbar-brand" href="inicio">Rosario en cartel</a>
-            <button class="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive">
+            <a class="navbar-brand" href="inicio" style="color: #D9C202;">Rosario en cartel</a>
+            <button class="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" style="color: #D9C202 !important; background-color: #000000 !important;">
                 Menú <i class="fas fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#obras">Cartelera</a></li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="#obras" style="color: #D9C202 !important;" >Cartelera</a></li>
                     <% if (user != null) { %>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="misEntradas">Mis Compras</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="logout" style="color: #ffc107;">Salir</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="misEntradas" style="color: #D9C202 !important;">Mis Compras</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="logout" style="color: #ffffff;">Salir</a></li>
                     <% } else { %>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="login.jsp" style="color: #6dabe4; font-weight: bold;">Iniciar Sesión</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="login.jsp" style="color: #ffffff; font-weight: bold;">Iniciar Sesión</a></li>
                     <% } %>
                 </ul>
             </div>
@@ -61,15 +103,15 @@
 
     <header class="masthead bg-primary text-white text-center">
         <div class="container d-flex align-items-center flex-column">
-            <h1 class="masthead-heading text-uppercase mb-0">
+            <h1 class="masthead-heading text-uppercase mb-0" style="color: #D9C202 !important;">
                 <%= (user != null) ? "Bienvenido, " + user.getNombre() : "Rosario en cartel" %>
             </h1>
             <div class="divider-custom divider-light">
-                <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon"><i class="fas fa-theater-masks"></i></div>
+                <div class="divider-custom-line style=" ></div>
+                <div class="divider-custom-icon"><i class="fas fa-theater-masks" ></i></div>
                 <div class="divider-custom-line"></div>
             </div>
-            <p class="masthead-subheading font-weight-light mb-0">Encuentra tu próxima función favorita</p>
+            <p class="masthead-subheading font-weight-light mb-0" style="color: #D9C202 !important;">Encuentra tu próxima función favorita</p>
         </div>
     </header>
 
@@ -106,7 +148,7 @@
                         <input type="date" id="filterHasta" class="form-control border-0 shadow-sm">
                     </div>
                     <div class="col-md-2">
-                        <button onclick="limpiarFiltros()" class="btn btn-secondary w-100">Limpiar</button>
+                        <button onclick="limpiarFiltros()" class="btn btn-secondary w-100" >Limpiar</button>
                     </div>
                 </div>
             </div>
@@ -157,7 +199,9 @@
     </section>
 
     <footer class="footer text-center">
-        <div class="container"><p class="lead mb-0">Rosario en Cartel &copy; 2026</p></div>
+        <div class="container">
+        	<p class="lead mb-0">Rosario en Cartel &copy; 2026</p>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
