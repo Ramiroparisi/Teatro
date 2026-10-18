@@ -201,4 +201,46 @@ public class ObraDAO {
             DbConnector.getInstancia().releaseConn();
         }
     }
+    public List<Obra> getObrasCartelera() throws SQLException {
+        List<Obra> lista = new ArrayList<>();
+        String sqlObras = "SELECT DISTINCT o.*, t.Nombre as nombreTeatro FROM obra o " +
+                          "INNER JOIN teatro t ON o.TeatroID = t.ID " +
+                          "INNER JOIN funcion f ON o.ID = f.ObraID " +
+                          "WHERE f.Fecha >= CURDATE()";
+        
+        Connection cn = DbConnector.getInstancia().getConn();
+        try (PreparedStatement psObra = cn.prepareStatement(sqlObras);
+             ResultSet rsObra = psObra.executeQuery()) {
+            
+            while (rsObra.next()) {
+                Obra o = mapearObra(rsObra);
+                o.setNombreTeatro(rsObra.getString("nombreTeatro"));
+                o.setFunciones(getFuncionesActivasPorObra(cn, o.getId()));
+                
+                lista.add(o);
+            }
+        } finally {
+            DbConnector.getInstancia().releaseConn();
+        }
+        return lista;
+    }
+
+    private List<Funcion> getFuncionesActivasPorObra(Connection cn, int obraID) throws SQLException {
+        List<Funcion> funciones = new ArrayList<>();
+        String sqlFunc = "SELECT * FROM funcion WHERE ObraID = ? AND Fecha >= CURDATE() ORDER BY Fecha, Hora";
+        try (PreparedStatement psFunc = cn.prepareStatement(sqlFunc)) {
+            psFunc.setInt(1, obraID);
+            try (ResultSet rsFunc = psFunc.executeQuery()) {
+                while (rsFunc.next()) {
+                    Funcion f = new Funcion();
+                    f.setId(rsFunc.getInt("ID"));
+                    f.setFecha(rsFunc.getDate("Fecha"));
+                    f.setHora(rsFunc.getTime("Hora"));
+                    f.setPrecio(rsFunc.getBigDecimal("Precio"));
+                    funciones.add(f);
+                }
+            }
+        }
+        return funciones;
+    }
 }

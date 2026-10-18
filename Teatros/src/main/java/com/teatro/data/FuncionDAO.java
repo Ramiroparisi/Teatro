@@ -121,7 +121,6 @@ public class FuncionDAO {
             int idObra = rs.getInt("ObraID");
             f.setObraID(rs.wasNull() ? null : idObra);
 
-            // AÑADIR ESTO:
             int idTeatro = rs.getInt("TeatroID");
             f.setTeatroID(rs.wasNull() ? null : idTeatro);
 

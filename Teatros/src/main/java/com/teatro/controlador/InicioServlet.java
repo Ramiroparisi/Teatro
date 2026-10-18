@@ -22,7 +22,7 @@ public class InicioServlet extends HttpServlet {
         ObraDAO odao = new ObraDAO();
         
         try {
-            List<Obra> listaObras = odao.getAllWithFunciones();
+            List<Obra> listaObras = odao.getObrasCartelera();
             request.setAttribute("obrasCartelera", listaObras);
             request.getRequestDispatcher("/index.jsp").forward(request, response);
             
