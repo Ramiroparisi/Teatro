@@ -13,3 +13,6 @@ bin/
 tmp/
 *.tmp
 *.bak
+
+Teatros/target
+Teatros/build
