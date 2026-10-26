@@ -33,8 +33,20 @@ public class RegistroServlet extends HttpServlet {
             udao.add(u);
             response.sendRedirect("login.jsp?status=registration_success");
         } catch (SQLException e) {
-            request.setAttribute("error", e.getMessage());
+            getServletContext().log("Error de SQL en RegistroServlet", e);
+            
+            String mensaje = e.getMessage();
+            if (mensaje == null || !mensaje.contains("ya ")) {
+                mensaje = "No se pudo completar el registro. Intente nuevamente.";
+            }
+            
+            request.setAttribute("error", mensaje);
             request.setAttribute("usuarioFallido", u); 
+            request.getRequestDispatcher("registration.jsp").forward(request, response);
+        } catch (Exception e) {
+            getServletContext().log("Error inesperado en RegistroServlet", e);
+            request.setAttribute("error", "Ocurrió un error inesperado en el sistema.");
+            request.setAttribute("usuarioFallido", u);
             request.getRequestDispatcher("registration.jsp").forward(request, response);
         }
     }

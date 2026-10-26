@@ -27,8 +27,8 @@ public class ObraServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/Admin/listaObras.jsp").forward(request, response);
             
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Error en el Servlet: " + e.getMessage());
+            getServletContext().log("Error en ObraServlet al listar las obras", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno al obtener el listado de obras.");
         }
     }
 }

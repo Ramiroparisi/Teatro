@@ -32,10 +32,9 @@ public class MisEntradasServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/Cliente/misEntradas.jsp").forward(request, response);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            response.setContentType("text/html");
-            response.getWriter().println("<h2>Error al recuperar tus entradas</h2>");
-            response.getWriter().println("<p>" + e.getMessage() + "</p>");
+            getServletContext().log("Error en MisEntradasServlet al recuperar entradas del usuario ID " + user.getId(), e);
+            request.setAttribute("error", "No se pudieron obtener tus entradas en este momento. Intenta nuevamente más tarde.");
+            request.getRequestDispatcher("/WEB-INF/Cliente/misEntradas.jsp").forward(request, response);
         }
     }
 }

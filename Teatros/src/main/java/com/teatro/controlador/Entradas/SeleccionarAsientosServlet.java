@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 public class SeleccionarAsientosServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -49,15 +48,18 @@ public class SeleccionarAsientosServlet extends HttpServlet {
             Obra obra = odao.getByID(funcion.getObraID());
             AsientoDAO adao = new AsientoDAO();
             List<Asiento> asientos = adao.getEstadoAsientos(funcion.getTeatroID(), funcionId);
+            
             request.setAttribute("funcion", funcion);
             request.setAttribute("obra", obra);
             request.setAttribute("asientos", asientos);
             
             request.getRequestDispatcher("/WEB-INF/Cliente/seleccionarAsiento.jsp").forward(request, response);
 
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de función inválido.");
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al cargar el mapa: " + e.getMessage());
+            getServletContext().log("Error en SeleccionarAsientosServlet", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ocurrió un error al cargar el mapa de asientos.");
         }
     }
 }

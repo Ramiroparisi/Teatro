@@ -62,9 +62,8 @@ public class VerEstadoFuncionServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de función inválido.");
         } catch (Exception e) {
-            System.err.println("Error en VerEstadoFuncionServlet:");
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno: " + e.getMessage());
+            getServletContext().log("Error en VerEstadoFuncionServlet", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno al obtener el estado de la función.");
         }
     }
 }

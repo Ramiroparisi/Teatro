@@ -27,7 +27,8 @@ public class NuevaObraServlet extends HttpServlet {
             
             request.getRequestDispatcher("/WEB-INF/Admin/nuevaObra.jsp").forward(request, response);
         } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener teatros");
+            getServletContext().log("Error en NuevaObraServlet (doGet)", e);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno al obtener el listado de teatros.");
         }
     }
 
@@ -63,7 +64,8 @@ public class NuevaObraServlet extends HttpServlet {
             response.sendRedirect("listaObras");
             
         } catch (Exception e) {
-            request.setAttribute("error", "Error: " + e.getMessage());
+            getServletContext().log("Error en NuevaObraServlet (doPost) al crear obra", e);
+            request.setAttribute("error", "No se pudo registrar la obra. Por favor, verifique los datos e intente nuevamente.");
             doGet(request, response);
         }
     }

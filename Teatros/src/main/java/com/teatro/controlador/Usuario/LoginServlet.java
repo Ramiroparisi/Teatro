@@ -3,6 +3,7 @@ package com.teatro.controlador.Usuario;
 import com.teatro.data.UsuarioDAO;
 import com.teatro.modelo.Usuario;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,33 +14,48 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-	        throws ServletException, IOException {
-	    
-		request.setCharacterEncoding("UTF-8");
-		
-	    String identificador = request.getParameter("txtUsuario");
-	    String pass = request.getParameter("txtPassword");
-	    
-	    UsuarioDAO udao = new UsuarioDAO();
-	    Usuario u = udao.login(identificador, pass);
-	    
-	    if (u != null) {
-	        HttpSession session = request.getSession();
-	        session.setAttribute("usuarioLogueado", u);
-	        
-	        if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("admin")) {
-	        	response.sendRedirect("adminDashboard");
-	        } 
-	        else  if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("cliente")) { 
-	            response.sendRedirect("index.jsp");
-	        }
-	        
-	    } else {
-	        request.setAttribute("error", "Credenciales incorrectas.");
-	        request.getRequestDispatcher("login.jsp").forward(request, response);
-	    }
-	}
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        request.setCharacterEncoding("UTF-8");
+        
+        String identificador = request.getParameter("txtUsuario");
+        String pass = request.getParameter("txtPassword");
+        
+        try {
+            UsuarioDAO udao = new UsuarioDAO();
+            Usuario u = udao.login(identificador, pass);
+            
+            if (u != null) {
+                HttpSession session = request.getSession();
+                session.setAttribute("usuarioLogueado", u);
+                
+                if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("admin")) {
+                    response.sendRedirect("adminDashboard");
+                } else if (u.getRol() != null && u.getRol().toString().equalsIgnoreCase("cliente")) { 
+                    response.sendRedirect("index.jsp");
+                } else {
+                    response.sendRedirect("index.jsp");
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                request.setAttribute("error", "Credenciales incorrectas.");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
+            
+        } catch (SQLException e) {
+            getServletContext().log("Error de base de datos en LoginServlet", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            request.setAttribute("error", "Error interno del servidor. Por favor, intente más tarde.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        } catch (Exception e) {
+            getServletContext().log("Error inesperado en LoginServlet", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            request.setAttribute("error", "Ocurrió un error inesperado al procesar la solicitud.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+        }
+    }
 }

@@ -46,13 +46,12 @@ public class UsuarioDAO {
 	    }
 	}
     
-    public Usuario login(String identificador, String pass) {
+	public Usuario login(String identificador, String pass) throws SQLException {
         Usuario u = null;
         Connection cn = DbConnector.getInstancia().getConn();
         
         if (cn == null) {
-            System.err.println("ERROR: No se pudo obtener la conexión a la base de datos.");
-            return null;
+            throw new SQLException("No se pudo obtener la conexión a la base de datos.");
         }
 
         String sql = "SELECT * FROM usuario WHERE (Mail = ? OR Documento = ?) AND Contrasena = ?";
@@ -67,8 +66,6 @@ public class UsuarioDAO {
                     u = mapearUsuario(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             DbConnector.getInstancia().releaseConn();
         }
