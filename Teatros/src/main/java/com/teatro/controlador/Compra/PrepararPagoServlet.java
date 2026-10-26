@@ -46,9 +46,11 @@ public class PrepararPagoServlet extends HttpServlet {
             List<PreferenceItemRequest> items = new ArrayList<>();
             items.add(item);
 
-            String urlSuccess = "http://localhost:8080/Teatros/finalizarPago";
-            String urlFailure = "http://localhost:8080/Teatros/seleccionarAsientos?funcionId=" + funcion.getId();
-            String urlPending = "http://localhost:8080/Teatros/misEntradas";
+            String baseUrl = "https://morally-scooter-chirpy.ngrok-free.dev/Teatros";
+            
+            String urlSuccess = baseUrl + "/finalizarPago";
+            String urlFailure = baseUrl + "/seleccionarAsientos?funcionId=" + funcion.getId();
+            String urlPending = baseUrl + "/misEntradas";
 
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                     .success(urlSuccess)
@@ -59,7 +61,7 @@ public class PrepararPagoServlet extends HttpServlet {
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                     .items(items)
                     .backUrls(backUrls) 
-                   // .autoReturn("approved")
+                    .autoReturn("approved")
                     .binaryMode(true)
                     .build();
 
