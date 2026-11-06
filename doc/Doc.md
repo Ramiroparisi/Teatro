@@ -68,6 +68,10 @@ Se detalla el esquema basado en el Diagrama Entidad-Relación (DER) del proyecto
 Se adjunta el diagrama para facilitar la comprensión:  
 [Ver diagrama en draw.io ](https://drive.google.com/file/d/1GOj1frXQ_f--uAOp4revz33eggTfYStH/view?usp=sharing)
 
+**Modelo de dominio:**  
+Se adjunta el diagrama:  
+[Ver modelo de dominio en draw.io ](https://drive.google.com/file/d/1gZBrAgetiuDv8Leg8inuZzggY9MgUE2x/view?usp=sharing)
+
 ---
 
 ## Checklist del Alcance del Sistema
@@ -102,6 +106,7 @@ Se verifica el cumplimiento de las funcionalidades desarrolladas frente a los re
 En el siguiente link se puede ver una demo en la que se puede ver todo el alcance del sistema:
 [Demo en youtube](https://youtu.be/GL-KDytN_7A)
 [Demo en Google Drive](https://drive.google.com/file/d/1bqPXXPgTNvQTfxq31gZxQb38m-IC9-Iv/view?usp=sharing)
+[Demo definitiva en youtube](https://www.youtube.com/watch?v=D9zISe_2dVE)
 
 ## Código fuente
 Aquí se puede encontrar el código fuente del proyecto:  
