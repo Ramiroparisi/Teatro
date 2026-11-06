@@ -4,6 +4,7 @@ import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.resources.preference.Preference;
 import com.teatro.modelo.Funcion;
+import com.teatro.modelo.Usuario;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,13 +22,23 @@ public class PrepararPagoServlet extends HttpServlet {
             throws ServletException, IOException {
         
         HttpSession session = request.getSession();
-        MercadoPagoConfig.setAccessToken("TEST-2136096941352102-011819-c00a9cd50479f814c1b73a523c597802-588563969");
+        
+        String mpToken = System.getenv("MP_ACCESS_TOKEN");
+        
+        if (mpToken == null || mpToken.trim().isEmpty()) {
+            System.err.println("Error Crítico: La variable de entorno MP_ACCESS_TOKEN no está configurada.");
+            response.sendRedirect("listaObras?error=config_pagos");
+            return;
+        }
+        
+        MercadoPagoConfig.setAccessToken(mpToken);
 
+        Usuario user = (Usuario) session.getAttribute("usuarioLogueado");
         Funcion funcion = (Funcion) session.getAttribute("funcion_actual");
         Double total = (Double) session.getAttribute("monto_total");
         String idsAsientos = (String) session.getAttribute("asientos_seleccionados_ids");
 
-        if (funcion == null || total == null) {
+        if (user == null || funcion == null || total == null) {
             response.sendRedirect("listaObras");
             return;
         }
@@ -48,9 +59,9 @@ public class PrepararPagoServlet extends HttpServlet {
 
             String baseUrl = "https://morally-scooter-chirpy.ngrok-free.dev/Teatros";
             
-            String urlSuccess = baseUrl + "/finalizarPago";
-            String urlFailure = baseUrl + "/seleccionarAsientos?funcionId=" + funcion.getId();
-            String urlPending = baseUrl + "/misEntradas";
+            String urlSuccess = baseUrl + "/misEntradas?exito=true";
+            String urlFailure = baseUrl + "/seleccionarAsientos?funcionId=" + funcion.getId() + "&error=pago_rechazado";
+            String urlPending = baseUrl + "/misEntradas?pendiente=true";
 
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
                     .success(urlSuccess)
@@ -58,10 +69,14 @@ public class PrepararPagoServlet extends HttpServlet {
                     .pending(urlPending)
                     .build();
 
+            String externalRef = user.getId() + "_" + funcion.getId() + "_" + idsAsientos;
+
             PreferenceRequest preferenceRequest = PreferenceRequest.builder()
                     .items(items)
                     .backUrls(backUrls) 
                     .autoReturn("approved")
+                    .notificationUrl(baseUrl + "/finalizarPago")
+                    .externalReference(externalRef) 
                     .binaryMode(true)
                     .build();
 
